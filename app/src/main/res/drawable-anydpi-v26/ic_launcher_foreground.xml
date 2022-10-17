@@ -1,0 +1,57 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+  <group android:scaleX="0.9835714"
+      android:scaleY="0.9835714"
+      android:translateX="26.46"
+      android:translateY="27.443571">
+    <path
+        android:pathData="M28,28m-24,0a24,24 0,1 1,48 0a24,24 0,1 1,-48 0"
+        android:strokeWidth="4"
+        android:fillColor="#00000000"
+        android:strokeColor="#000"/>
+    <path
+        android:pathData="M2,12.295l11.668,-10.295"
+        android:strokeWidth="4"
+        android:fillColor="#00000000"
+        android:strokeColor="#000"
+        android:strokeLineCap="butt"/>
+    <path
+        android:pathData="M41.615,2l12.385,10.295"
+        android:strokeWidth="4"
+        android:fillColor="#00000000"
+        android:strokeColor="#000"
+        android:strokeLineCap="butt"/>
+    <path
+        android:pathData="M20.624,44.204l0.072,-31.909"
+        android:strokeWidth="4"
+        android:fillColor="#00000000"
+        android:strokeColor="#000"
+        android:strokeLineCap="butt"/>
+    <path
+        android:pathData="M18.679,12.295l12.562,0"
+        android:strokeWidth="4"
+        android:fillColor="#00000000"
+        android:strokeColor="#000"
+        android:strokeLineCap="butt"/>
+    <path
+        android:pathData="M14.974,25.778l16.267,0.145"
+        android:strokeWidth="4"
+        android:fillColor="#00000000"
+        android:strokeColor="#000"
+        android:strokeLineCap="butt"/>
+    <path
+        android:pathData="M31.241,12.295c-0,0 7.69,-0.786 7.614,7.327c-0.071,7.565 -7.614,6.301 -7.614,6.301"
+        android:strokeWidth="4"
+        android:fillColor="#00000000"
+        android:strokeColor="#000"/>
+    <path
+        android:pathData="M14.974,35.008l14.026,0.254"
+        android:strokeWidth="4"
+        android:fillColor="#00000000"
+        android:strokeColor="#000"
+        android:strokeLineCap="butt"/>
+  </group>
+</vector>
