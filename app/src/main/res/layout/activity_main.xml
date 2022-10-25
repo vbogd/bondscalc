@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.MainActivity">
+    tools:context=".presentation.MainActivityOld">
 
     <!-- An invisible view aligned to the center of the parent. Allows other
     views to be arranged on either side -->

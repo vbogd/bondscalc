@@ -1,63 +1,226 @@
 package com.nxtru.bondscalc.presentation
 
-import androidx.appcompat.app.AppCompatActivity
+
 import android.os.Bundle
-import android.widget.CheckBox
-import android.widget.TextView
-import androidx.core.widget.doAfterTextChanged
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModelProvider
-import com.nxtru.bondscalc.R
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.nxtru.bondscalc.presentation.ui.theme.MainTheme
 
-class MainActivity : AppCompatActivity() {
-
-    private lateinit var vm: MainViewModel
-
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        vm = ViewModelProvider(this, MainViewModelFactory(applicationContext))[MainViewModel::class.java]
-
-        findViewById<TextView>(R.id.result).let { resultRub ->
-            vm.resultRubLive.observe(this) { resultRub.text = it }
-        }
-
-        findViewById<TextView>(R.id.result_percent).let { resultPercent ->
-            vm.resultYTMLive.observe(this) { resultPercent.text = it }
-        }
-
-        bindTextView(findViewById(R.id.ticker), vm.ticker, vm::setTicker)
-        bindTextView(findViewById(R.id.commission), vm.commission, vm::setCommission)
-        bindTextView(findViewById(R.id.tax), vm.tax, vm::setTax)
-        bindTextView(findViewById(R.id.coupon), vm.coupon, vm::setCoupon)
-        bindTextView(findViewById(R.id.par_value), vm.parValue, vm::setParValue)
-        bindTextView(findViewById(R.id.buy_price), vm.buyPrice, vm::setBuyPrice)
-        bindTextView(findViewById(R.id.buy_date), vm.buyDate, vm::setBuyDate)
-        bindTextView(findViewById(R.id.sell_price), vm.sellPrice, vm::setSellPrice)
-        bindTextView(findViewById(R.id.sell_date), vm.sellDate, vm::setSellDate)
-        bindCheckbox(findViewById(R.id.till_maturity), vm.tillMaturity, vm::setTillMaturity)
+//        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+//        window.setDecorFitsSystemWindows(false)
+        setContent { MainScreen() }
     }
+}
 
-    private fun bindTextView(
-        view: TextView,
-        liveData: LiveData<String>,
-        vmSetter: (String) -> Unit
-    ) {
-        view.doAfterTextChanged { vmSetter(it.toString()) }
-        liveData.observe(this) {
-            if (it != view.text.toString()) view.text = it
+data class BondParams(
+    val ticker: String,
+    val commission: String,
+    val tax: String,
+    val coupon: String,
+    val parValue: String,
+    val buyPrice: String,
+    val buyDate: String,
+    val sellPrice: String,
+    val sellDate: String,
+    val tillMaturity: Boolean,
+)
+
+class MainViewModel1 : ViewModel() {
+    var bondParams by mutableStateOf(BondParams(
+        "", "", "", "", "", "", "",
+        "", "", false
+    ))
+        private set
+
+    fun onBondParamsChange(value: BondParams) {
+        bondParams = value
+    }
+}
+
+@Composable
+fun MainScreen(viewModel: MainViewModel1 = viewModel()) {
+    MainContent(
+        bondParams = viewModel.bondParams,
+        onBondParamsChange = { viewModel.onBondParamsChange(it) },
+    )
+}
+
+@Composable
+fun MainContent(bondParams: BondParams, onBondParamsChange: (BondParams) -> Unit) {
+    return MainTheme {
+        // A surface container using the 'background' color from the theme
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+            // https://stackoverflow.com/a/72608560
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .statusBarsPadding()
+//                .navigationBarsPadding()
+//                .imePadding()
+//                .verticalScroll(rememberScrollState()),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            val padding = 8.dp
+            Column(
+                modifier = Modifier.padding(all = padding) //.verticalScroll(rememberScrollState())
+            ) {
+                TextField(label = "тикер", value = bondParams.ticker) {
+                    onBondParamsChange(bondParams.copy(ticker = it))
+                }
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Column(Modifier.weight(1f)) {
+                        NumericField("комиссия", bondParams.commission) {
+                            onBondParamsChange(bondParams.copy(commission = it))
+                        }
+                    }
+                    Spacer(modifier = Modifier.width(padding))
+                    Column(Modifier.weight(1f)) {
+                        NumericField("налог", bondParams.tax) {
+                            onBondParamsChange(bondParams.copy(tax = it))
+                        }
+                    }
+                }
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Column(Modifier.weight(1f)) {
+                        MoneyField("номинал", bondParams.parValue) {
+                            onBondParamsChange(bondParams.copy(parValue = it))
+                        }
+                    }
+                    Spacer(modifier = Modifier.width(padding))
+                    Column(Modifier.weight(1f)) {
+                        NumericField("купон", bondParams.coupon) {
+                            onBondParamsChange(bondParams.copy(coupon = it))
+                        }
+                    }
+                }
+                Header("покупка")
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Column(Modifier.weight(1f)) {
+                        DateField("дата", bondParams.buyDate) {
+                            onBondParamsChange(bondParams.copy(buyDate = it))
+                        }
+                    }
+                    Spacer(modifier = Modifier.width(padding))
+                    Column(Modifier.weight(1f)) {
+                        NumericField("цена", bondParams.buyPrice) {
+                            onBondParamsChange(bondParams.copy(buyPrice = it))
+                        }
+                    }
+                }
+                Header("продажа")
+                Switch(checked = bondParams.tillMaturity, onCheckedChange = {
+                    onBondParamsChange(bondParams.copy(tillMaturity = it))
+                })
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Column(Modifier.weight(1f)) {
+                        DateField("дата", bondParams.sellDate) {
+                            onBondParamsChange(bondParams.copy(sellDate = it))
+                        }
+                    }
+                    Spacer(modifier = Modifier.width(padding))
+                    Column(Modifier.weight(1f)) {
+                        NumericField("цена", bondParams.sellPrice) {
+                            onBondParamsChange(bondParams.copy(sellPrice = it))
+                        }
+                    }
+                }
+                Header("результаты")
+                Text(text = bondParams.toString())
+            }
         }
     }
+}
 
-    private fun bindCheckbox(
-        view: CheckBox,
-        liveData: LiveData<Boolean>,
-        vmSetter: (Boolean) -> Unit
-    ) {
-        view.setOnClickListener { vmSetter(view.isChecked) }
-        liveData.observe(this) {
-            if (it != view.isChecked) view.isChecked = it
-        }
-    }
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TextField(label: String, value: String, onValueChange: (String) -> Unit) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        modifier = Modifier.fillMaxWidth(),
+        label = { Text(label) },
+        singleLine = true,
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun NumericField(label: String, value: String, onValueChange: (String) -> Unit) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        modifier = Modifier.fillMaxWidth(),
+        label = { Text(label) },
+        singleLine = true,
+        trailingIcon = { Text("%") },
+        textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.End),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MoneyField(label: String, value: String, onValueChange: (String) -> Unit) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        modifier = Modifier.fillMaxWidth(),
+        label = { Text(label) },
+        singleLine = true,
+        trailingIcon = { Text("P") },
+        textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.End),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DateField(label: String, value: String, onValueChange: (String) -> Unit) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        modifier = Modifier.fillMaxWidth(),
+        label = { Text(label) },
+        singleLine = true,
+        placeholder = { Text("DD.MM.YYYY") },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+    )
+}
+
+@Composable
+fun Header(text: String) {
+    Text(
+        text = text,
+        color = MaterialTheme.colorScheme.secondary,
+        style = MaterialTheme.typography.titleLarge
+    )
+}
+
+@Preview(name = "Light Mode")
+//@Preview(
+//    uiMode = Configuration.UI_MODE_NIGHT_YES,
+//    showBackground = true,
+//    name = "Dark Mode"
+//)
+@Composable
+fun PreviewMessageCard() {
+    MainScreen()
 }
