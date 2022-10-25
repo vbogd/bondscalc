@@ -32,12 +32,17 @@ class MainActivity : ComponentActivity() {
 fun MainScreen(viewModel: MainViewModel) {
     MainContent(
         bondParams = viewModel.bondParams,
+        calcResult = viewModel.calcResult,
         onBondParamsChange = { viewModel.onBondParamsChange(it) },
     )
 }
 
 @Composable
-fun MainContent(bondParams: BondParams, onBondParamsChange: (BondParams) -> Unit) {
+fun MainContent(
+    bondParams: BondParams,
+    calcResult: String,
+    onBondParamsChange: (BondParams) -> Unit
+) {
     return MainTheme {
         // A surface container using the 'background' color from the theme
         Surface(
@@ -118,7 +123,7 @@ fun MainContent(bondParams: BondParams, onBondParamsChange: (BondParams) -> Unit
                     }
                 }
                 Header("результаты")
-                Text(text = bondParams.toString())
+                Text(text = calcResult)
             }
         }
     }
@@ -197,5 +202,5 @@ fun Header(text: String) {
 //)
 @Composable
 fun PreviewMessageCard() {
-    MainContent(BondParams.EMPTY) {}
+    MainContent(BondParams.EMPTY, "") {}
 }

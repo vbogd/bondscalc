@@ -21,8 +21,13 @@ class MainViewModel(
     var bondParams by mutableStateOf(BondParams.EMPTY)
         private set
 
+    var calcResult by mutableStateOf("")
+        private set
+
     fun onBondParamsChange(value: BondParams) {
         bondParams = value
+        saveBondParams()
+        calculate()
     }
 
     // input fields
@@ -45,6 +50,7 @@ class MainViewModel(
 
     init {
         loadBondParams()
+        calculate()
     }
 
     fun setTicker(value: String) = setAndUpdate(ticker, value)
@@ -65,44 +71,24 @@ class MainViewModel(
     }
 
     private fun saveBondParams() {
-        saveBondParamsUseCase.execute(BondParams(
-            ticker = ticker.value ?: "",
-            commission = commission.value ?: "",
-            tax = tax.value ?: "",
-            coupon = coupon.value ?: "",
-            parValue = parValue.value ?: "",
-            buyPrice = buyPrice.value ?: "",
-            buyDate = buyDate.value ?: "",
-            sellPrice = sellPrice.value ?: "",
-            sellDate = sellDate.value ?: "",
-            tillMaturity = tillMaturity.value ?: false
-        ))
+        saveBondParamsUseCase.execute(bondParams)
     }
 
     private fun loadBondParams() {
-        val params = loadBondParamsUseCase.execute()
-        ticker.value = params.ticker
-        commission.value = params.commission
-        tax.value = params.tax
-        coupon.value = params.coupon
-        parValue.value = params.parValue
-        buyPrice.value = params.buyPrice
-        buyDate.value = params.buyDate
-        sellPrice.value = params.sellPrice
-        sellDate.value = params.sellDate
-        tillMaturity.value = params.tillMaturity
+        bondParams = loadBondParamsUseCase.execute()
     }
 
     private fun calculate() {
-        val params = loadBondParamsUseCase.execute()
-        Log.d(TAG, "params = $params")
-        val res = bondCalcUseCase.execute(params)
+        Log.d(TAG, "params = $bondParams")
+        val res = bondCalcUseCase.execute(bondParams)
         Log.d(TAG, "result = $res")
 
         if (res == null) { noResult(); return }
 
         resultRubLive.value = String.format("%,.2f₽", res.income)
         resultYTMLive.value = String.format("%,.2f", res.ytm * 100) + "%"
+
+        calcResult = "${resultRubLive.value}; ${resultYTMLive.value}"
     }
 
     private fun noResult() {
