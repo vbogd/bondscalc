@@ -15,8 +15,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.nxtru.bondscalc.domain.models.BondParams
 import com.nxtru.bondscalc.presentation.ui.theme.MainTheme
 
 class MainActivity : ComponentActivity() {
@@ -24,37 +24,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 //        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 //        window.setDecorFitsSystemWindows(false)
-        setContent { MainScreen() }
-    }
-}
-
-data class BondParams(
-    val ticker: String,
-    val commission: String,
-    val tax: String,
-    val coupon: String,
-    val parValue: String,
-    val buyPrice: String,
-    val buyDate: String,
-    val sellPrice: String,
-    val sellDate: String,
-    val tillMaturity: Boolean,
-)
-
-class MainViewModel1 : ViewModel() {
-    var bondParams by mutableStateOf(BondParams(
-        "", "", "", "", "", "", "",
-        "", "", false
-    ))
-        private set
-
-    fun onBondParamsChange(value: BondParams) {
-        bondParams = value
+        setContent { MainScreen(viewModel(factory = MainViewModelFactory(applicationContext))) }
     }
 }
 
 @Composable
-fun MainScreen(viewModel: MainViewModel1 = viewModel()) {
+fun MainScreen(viewModel: MainViewModel) {
     MainContent(
         bondParams = viewModel.bondParams,
         onBondParamsChange = { viewModel.onBondParamsChange(it) },
@@ -222,5 +197,5 @@ fun Header(text: String) {
 //)
 @Composable
 fun PreviewMessageCard() {
-    MainScreen()
+    MainContent(BondParams.EMPTY) {}
 }

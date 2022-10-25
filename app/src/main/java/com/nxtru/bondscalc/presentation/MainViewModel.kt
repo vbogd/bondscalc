@@ -1,6 +1,9 @@
 package com.nxtru.bondscalc.presentation
 
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.nxtru.bondscalc.domain.models.BondParams
@@ -14,6 +17,13 @@ class MainViewModel(
     private val saveBondParamsUseCase: SaveBondParamsUseCase,
     private val loadBondParamsUseCase: LoadBondParamsUseCase
 ) : ViewModel() {
+
+    var bondParams by mutableStateOf(BondParams.EMPTY)
+        private set
+
+    fun onBondParamsChange(value: BondParams) {
+        bondParams = value
+    }
 
     // input fields
     val ticker = MutableLiveData<String>()

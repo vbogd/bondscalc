@@ -14,4 +14,13 @@ data class BondParams(
     val sellPrice: String,
     val sellDate: String,
     val tillMaturity: Boolean,
-)
+) {
+    companion object {
+        val EMPTY = BondParams(
+            "", "", "", "", "",
+            "", "",
+            "", "",
+            false
+        )
+    }
+}
