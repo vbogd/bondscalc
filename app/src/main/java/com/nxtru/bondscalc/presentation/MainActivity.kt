@@ -11,11 +11,14 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.nxtru.bondscalc.R
 import com.nxtru.bondscalc.domain.models.BondParams
 import com.nxtru.bondscalc.presentation.ui.theme.MainTheme
 
@@ -40,7 +43,7 @@ fun MainScreen(viewModel: MainViewModel) {
 @Composable
 fun MainContent(
     bondParams: BondParams,
-    calcResult: String,
+    calcResult: BondCalcUIResult,
     onBondParamsChange: (BondParams) -> Unit
 ) {
     return MainTheme {
@@ -59,8 +62,9 @@ fun MainContent(
             color = MaterialTheme.colorScheme.background
         ) {
             val padding = 8.dp
+            val paddingModifier = Modifier.padding(padding)
             Column(
-                modifier = Modifier.padding(all = padding) //.verticalScroll(rememberScrollState())
+                modifier = paddingModifier //.verticalScroll(rememberScrollState())
             ) {
                 TextField(label = "тикер", value = bondParams.ticker) {
                     onBondParamsChange(bondParams.copy(ticker = it))
@@ -122,10 +126,41 @@ fun MainContent(
                         }
                     }
                 }
-                Header("результаты")
-                Text(text = calcResult)
+                Card(
+                    modifier = Modifier
+                        .padding(vertical = padding)
+                        .fillMaxWidth(),
+
+//                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+                ) {
+                    Column(
+                        modifier = paddingModifier,
+                        verticalArrangement = Arrangement.spacedBy(padding),
+                    ) {
+                        Header(stringResource(R.string.result))
+                        ResultRow(stringResource(R.string.result_rub), calcResult.income)
+                        ResultRow(stringResource(R.string.result_percent), calcResult.ytm)
+                    }
+                }
             }
         }
+    }
+}
+
+@Composable
+fun ResultRow(label: String, value: String) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = label,
+            color = MaterialTheme.colorScheme.secondary,
+        )
+        Text(
+            text = value,
+            fontWeight = FontWeight.Bold
+        )
     }
 }
 
@@ -202,5 +237,5 @@ fun Header(text: String) {
 //)
 @Composable
 fun PreviewMessageCard() {
-    MainContent(BondParams.EMPTY, "") {}
+    MainContent(BondParams.EMPTY, BondCalcUIResult("14.5₽", "9.5%")) {}
 }
