@@ -5,7 +5,6 @@ import org.junit.Test
 import org.junit.Assert.*
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.math.roundToInt
 
 internal class CalcTest {
 
@@ -105,9 +104,12 @@ internal class CalcTest {
         )
     }
 
-    private fun assertDoubleEquals(expected: Double, actual: Double) {
-        assertEquals((expected * 100).roundToInt(), (actual * 100).roundToInt())
-    }
-
     private fun date(date: String): Date = SimpleDateFormat("dd.MM.yyyy").parse(date)!!
+}
+
+internal fun assertDoubleEquals(expected: Double, actual: Double, precision: Int = 2) {
+    assertEquals(
+        String.format("%,.${precision}f", expected),
+        String.format("%,.${precision}f", actual)
+    )
 }

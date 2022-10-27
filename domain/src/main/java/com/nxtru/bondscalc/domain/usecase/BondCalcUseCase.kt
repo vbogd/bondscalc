@@ -43,12 +43,14 @@ class BondCalcUseCase {
     }
 }
 
-private fun getPercentValue(value: String) = if (value == "") null else value.toDouble() / 100
+private fun getPercentValue(value: String) = if (value == "") null else toDouble(value) / 100
 
-private fun getDoubleValue(value: String) = if (value == "") null else value.toDouble()
+private fun getDoubleValue(value: String) = if (value == "") null else toDouble(value)
 
 private fun getDateValue(value: String): Date? {
     if (value.length != 10) return null
     val format = SimpleDateFormat("dd.MM.yyyy")
     return format.parse(value)
 }
+
+private fun toDouble(value: String): Double = value.replace(',', '.').toDouble()
