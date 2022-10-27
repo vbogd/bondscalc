@@ -211,7 +211,7 @@ fun MoneyField(label: String, value: String, onValueChange: (String) -> Unit) {
         modifier = Modifier.fillMaxWidth(),
         label = { Text(label) },
         singleLine = true,
-        trailingIcon = { Text("P") },
+        trailingIcon = { Text("₽") },
         textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.End),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
     )
