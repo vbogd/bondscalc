@@ -1,17 +1,17 @@
 <resources>
     <string name="app_name">BondsCalc</string>
     <string name="ticker">тикер</string>
-    <string name="till_maturity">до погаса</string>
-    <string name="commission">комиссия, %</string>
-    <string name="tax">налог, %</string>
-    <string name="coupon">купон, %</string>
-    <string name="par_value">номинал, руб.</string>
+    <string name="till_maturity">до погашения</string>
+    <string name="commission">комиссия</string>
+    <string name="tax">налог</string>
+    <string name="coupon">купон</string>
+    <string name="par_value">номинал</string>
     <string name="buy">покупка</string>
-    <string name="price">цена, %</string>
+    <string name="price">цена</string>
     <string name="date">дата</string>
     <string name="sell">продажа</string>
     <string name="result">результаты</string>
-    <string name="result_rub">прибыль, руб.</string>
-    <string name="result_percent">доха, % год.</string>
+    <string name="result_rub">прибыль</string>
+    <string name="result_percent">доходность, год.</string>
     <string name="dd_mm_yyyy">DD.MM.YYYY</string>
 </resources>

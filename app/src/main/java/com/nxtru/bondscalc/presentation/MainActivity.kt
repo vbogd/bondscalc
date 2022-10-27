@@ -10,6 +10,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -66,62 +67,72 @@ fun MainContent(
             Column(
                 modifier = paddingModifier //.verticalScroll(rememberScrollState())
             ) {
-                TextField(label = "тикер", value = bondParams.ticker) {
+                TextField(label = stringResource(R.string.ticker), value = bondParams.ticker) {
                     onBondParamsChange(bondParams.copy(ticker = it))
                 }
                 Row(modifier = Modifier.fillMaxWidth()) {
                     Column(Modifier.weight(1f)) {
-                        NumericField("комиссия", bondParams.commission) {
+                        NumericField(stringResource(R.string.commission), bondParams.commission) {
                             onBondParamsChange(bondParams.copy(commission = it))
                         }
                     }
                     Spacer(modifier = Modifier.width(padding))
                     Column(Modifier.weight(1f)) {
-                        NumericField("налог", bondParams.tax) {
+                        NumericField(stringResource(R.string.tax), bondParams.tax) {
                             onBondParamsChange(bondParams.copy(tax = it))
                         }
                     }
                 }
                 Row(modifier = Modifier.fillMaxWidth()) {
                     Column(Modifier.weight(1f)) {
-                        MoneyField("номинал", bondParams.parValue) {
+                        MoneyField(stringResource(R.string.par_value), bondParams.parValue) {
                             onBondParamsChange(bondParams.copy(parValue = it))
                         }
                     }
                     Spacer(modifier = Modifier.width(padding))
                     Column(Modifier.weight(1f)) {
-                        NumericField("купон", bondParams.coupon) {
+                        NumericField(stringResource(R.string.coupon), bondParams.coupon) {
                             onBondParamsChange(bondParams.copy(coupon = it))
                         }
                     }
                 }
-                Header("покупка")
+                Header(stringResource(R.string.buy))
                 Row(modifier = Modifier.fillMaxWidth()) {
                     Column(Modifier.weight(1f)) {
-                        DateField("дата", bondParams.buyDate) {
+                        DateField(stringResource(R.string.date), bondParams.buyDate) {
                             onBondParamsChange(bondParams.copy(buyDate = it))
                         }
                     }
                     Spacer(modifier = Modifier.width(padding))
                     Column(Modifier.weight(1f)) {
-                        NumericField("цена", bondParams.buyPrice) {
+                        NumericField(stringResource(R.string.price), bondParams.buyPrice) {
                             onBondParamsChange(bondParams.copy(buyPrice = it))
                         }
                     }
                 }
-                Header("продажа")
-                Switch(checked = bondParams.tillMaturity, onCheckedChange = {
-                    onBondParamsChange(bondParams.copy(tillMaturity = it))
-                })
+                Header(stringResource(R.string.sell))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        color = MaterialTheme.colorScheme.secondary,
+                        text = stringResource(R.string.till_maturity)
+                    )
+                    Switch(checked = bondParams.tillMaturity, onCheckedChange = {
+                        onBondParamsChange(bondParams.copy(tillMaturity = it))
+                    })
+                }
                 Row(modifier = Modifier.fillMaxWidth()) {
                     Column(Modifier.weight(1f)) {
-                        DateField("дата", bondParams.sellDate) {
+                        DateField(stringResource(R.string.date), bondParams.sellDate) {
                             onBondParamsChange(bondParams.copy(sellDate = it))
                         }
                     }
                     Spacer(modifier = Modifier.width(padding))
                     Column(Modifier.weight(1f)) {
-                        NumericField("цена", bondParams.sellPrice) {
+                        NumericField(stringResource(R.string.price), bondParams.sellPrice) {
                             onBondParamsChange(bondParams.copy(sellPrice = it))
                         }
                     }
