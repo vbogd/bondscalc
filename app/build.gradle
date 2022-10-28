@@ -9,10 +9,10 @@ android {
 
     defaultConfig {
         applicationId "com.nxtru.bondscalc"
-        minSdk 21
+        minSdk 26
         targetSdk 33
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -22,8 +22,13 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            android.applicationVariants.all { variant ->
+                variant.outputs.all {
+                    outputFileName = "${rootProject.name}-${variant.versionName}.apk"
+                }
+            }
         }
     }
     compileOptions {
