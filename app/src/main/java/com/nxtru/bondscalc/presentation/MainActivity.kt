@@ -1,6 +1,5 @@
 package com.nxtru.bondscalc.presentation
 
-
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -22,6 +21,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.nxtru.bondscalc.R
 import com.nxtru.bondscalc.domain.models.BondParams
 import com.nxtru.bondscalc.presentation.ui.theme.MainTheme
+import com.nxtru.bondscalc.presentation.widgets.*
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,7 +67,13 @@ fun MainContent(
             Column(
                 modifier = paddingModifier //.verticalScroll(rememberScrollState())
             ) {
-                TextField(label = stringResource(R.string.ticker), value = bondParams.ticker) {
+                TickerField(
+                    value = bondParams.ticker,
+                    modifier = Modifier.fillMaxWidth(),
+                    onDone = {
+                        onBondParamsChange(bondParams.copy(commission = it))
+                    }
+                ) {
                     onBondParamsChange(bondParams.copy(ticker = it))
                 }
                 Row(modifier = Modifier.fillMaxWidth()) {
@@ -173,18 +179,6 @@ fun ResultRow(label: String, value: String) {
             fontWeight = FontWeight.Bold
         )
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TextField(label: String, value: String, onValueChange: (String) -> Unit) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        modifier = Modifier.fillMaxWidth(),
-        label = { Text(label) },
-        singleLine = true,
-    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
