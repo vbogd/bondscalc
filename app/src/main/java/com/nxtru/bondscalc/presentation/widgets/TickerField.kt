@@ -23,7 +23,9 @@ fun TickerField(
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     tickers: List<String>,
-    onSearch: (String) -> Unit
+    onSearchTicker: (String) -> Unit,
+    onSelectionDone: (String) -> Unit,
+    onSelectionCancel: () -> Unit = {},
 ) {
     var showMenu by remember { mutableStateOf(false) }
     val loadingStr = stringResource(R.string.loading)
@@ -37,11 +39,11 @@ fun TickerField(
             singleLine = true,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(
-                onDone = { onSearch(value); showMenu = true },
+                onDone = { onSearchTicker(value); showMenu = true },
             ),
             modifier = Modifier.fillMaxWidth().onKeyEvent {
                 if (it.nativeKeyEvent.keyCode == KeyEvent.KEYCODE_ENTER) {
-                    onSearch(value)
+                    onSearchTicker(value)
                     showMenu = true
                     true
                 } else
@@ -51,16 +53,15 @@ fun TickerField(
         DropdownMenu(
             modifier = Modifier.fillMaxWidth(),
             expanded = showMenu,
-            onDismissRequest = { showMenu = false },
+            onDismissRequest = { showMenu = false; onSelectionCancel() },
         ) {
             tickers.forEach { label ->
                 DropdownMenuItem(
                     text = { Text(text = label) },
                     enabled = label != loadingStr,
                     onClick = {
-                        println("item clicked: $label")
-                        onValueChange(label)
                         showMenu = false
+                        onSelectionDone(label)
                     }
                 )
             }
@@ -80,12 +81,16 @@ fun PreviewTickerField() {
         onValueChange = { ticker = it },
         modifier = Modifier.fillMaxWidth(),
         tickers = tickers,
-        onSearch = {
+        onSearchTicker = {
             println("Searching '$it'...")
             tickers = listOf(loadingStr)
             coroutineScope.launch {
                 tickers = loadEmul(it)
             }
+        },
+        onSelectionDone = {
+            ticker = it
+            println("Ticker selected: '$it'")
         }
     )
 }
