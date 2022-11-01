@@ -29,13 +29,6 @@ class MainViewModel(
     var tickerSelectionState by mutableStateOf(TickerSelectionUIState(""))
         private set
 
-    fun onBondParamsChange(value: BondParams) {
-        bondParams = value
-        updateTickerSelectionTicker()
-        saveBondParams()
-        calculate()
-    }
-
     private val bondCalcUseCase = BondCalcUseCase()
 
     init {
@@ -43,6 +36,43 @@ class MainViewModel(
         calculate()
     }
 
+    fun onBondParamsChange(value: BondParams) {
+        bondParams = value
+        updateTickerSelectionTicker()
+        saveBondParams()
+        calculate()
+    }
+
+    /*
+     * Ticker selection callbacks.
+     */
+    fun onSearchTicker(ticker: String) {
+        // TODO: implement
+        tickerSelectionState = tickerSelectionState.copy(
+            foundTickers = listOf("1", "2"),
+        )
+    }
+
+    fun onTickerSelectionDone(ticker: String) {
+        onBondParamsChange(
+            bondParams.copy(ticker = ticker)
+        )
+        tickerSelectionState = tickerSelectionState.copy(
+            foundTickers = null,
+        )
+        // TODO: load bond details
+    }
+
+    fun onTickerSelectionCancel() {
+        tickerSelectionState = tickerSelectionState.copy(
+            foundTickers = null,
+            searching = false,
+        )
+    }
+
+    /*
+     * Aux functions.
+     */
     private fun saveBondParams() {
         saveBondParamsUseCase.execute(bondParams)
     }

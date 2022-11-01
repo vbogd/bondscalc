@@ -38,10 +38,10 @@ fun MainScreen(viewModel: MainViewModel) {
         bondParams = viewModel.bondParams,
         calcResult = viewModel.calcResult,
         tickerSelectionState = viewModel.tickerSelectionState,
-        onBondParamsChange = { viewModel.onBondParamsChange(it) },
-        onSearchTicker = {},
-        onTickerSelectionDone = {},
-        onTickerSelectionCancel = {},
+        onBondParamsChange = viewModel::onBondParamsChange,
+        onSearchTicker = viewModel::onSearchTicker,
+        onTickerSelectionDone = viewModel::onTickerSelectionDone,
+        onTickerSelectionCancel = viewModel::onTickerSelectionCancel,
     )
 }
 
