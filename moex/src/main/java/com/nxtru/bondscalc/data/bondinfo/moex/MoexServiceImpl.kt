@@ -1,5 +1,7 @@
-package com.nxtru.bondscalc.moex
+package com.nxtru.bondscalc.data.bondinfo.moex
 
+import com.nxtru.bondscalc.domain.bondinfo.BondInfoService
+import com.nxtru.bondscalc.domain.models.Ticker
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.android.*
@@ -17,9 +19,9 @@ private object MoexRoutes {
 }
 
 // TODO: use HttpURLConnection? https://developer.android.com/reference/java/net/HttpURLConnection
-internal class MoexServiceImpl(
+class MoexServiceImpl(
     private val client: HttpClient = createHttpClient()
-) : MoexService {
+) : BondInfoService {
     // see http://iss.moex.com/iss/reference/5
     override suspend fun searchBonds(query: String): List<Ticker> {
         // TODO: CSV response is in windows-1251 encoding

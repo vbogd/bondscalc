@@ -12,6 +12,7 @@ java {
 val ktorVersion = "2.1.2"
 
 dependencies {
+    implementation(project(":domain"))
     implementation("io.ktor:ktor-client-core:$ktorVersion")
     implementation("io.ktor:ktor-client-android:$ktorVersion")
 //    implementation("io.ktor:ktor-client-serialization:$ktorVersion")
