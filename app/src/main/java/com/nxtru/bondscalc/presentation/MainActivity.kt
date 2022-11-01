@@ -37,11 +37,11 @@ fun MainScreen(viewModel: MainViewModel) {
     MainContent(
         bondParams = viewModel.bondParams,
         calcResult = viewModel.calcResult,
+        tickerSelectionState = viewModel.tickerSelectionState,
         onBondParamsChange = { viewModel.onBondParamsChange(it) },
-        tickersList = listOf("1", "2"),
         onSearchTicker = {},
         onTickerSelectionDone = {},
-        onTickerSelectionCancel = {}
+        onTickerSelectionCancel = {},
     )
 }
 
@@ -49,8 +49,8 @@ fun MainScreen(viewModel: MainViewModel) {
 fun MainContent(
     bondParams: BondParams,
     calcResult: BondCalcUIResult,
+    tickerSelectionState: TickerSelectionUIState,
     onBondParamsChange: (BondParams) -> Unit,
-    tickersList: List<String>,
     onSearchTicker: (String) -> Unit,
     onTickerSelectionDone: (String) -> Unit,
     onTickerSelectionCancel: () -> Unit = {},
@@ -76,10 +76,11 @@ fun MainContent(
                 modifier = paddingModifier //.verticalScroll(rememberScrollState())
             ) {
                 TickerField(
-                    value = bondParams.ticker,
+                    value = tickerSelectionState.ticker,
                     onValueChange = { onBondParamsChange(bondParams.copy(ticker = it)) },
                     modifier = Modifier.fillMaxWidth(),
-                    tickers = tickersList,
+                    tickers = tickerSelectionState.foundTickers,
+                    searching = tickerSelectionState.searching,
                     onSearchTicker = onSearchTicker,
                     onSelectionDone = onTickerSelectionDone,
                     onSelectionCancel = onTickerSelectionCancel
@@ -254,7 +255,7 @@ fun PreviewMessageCard() {
         BondParams.EMPTY,
         BondCalcUIResult("14.5₽", "9.5%"),
         onBondParamsChange = {},
-        tickersList = listOf("1", "2"),
+        tickerSelectionState = TickerSelectionUIState("ОФЗ"),
         onSearchTicker = {},
         onTickerSelectionDone = {},
         onTickerSelectionCancel = {}

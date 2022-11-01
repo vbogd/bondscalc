@@ -13,9 +13,10 @@ private object MoexRoutes {
     fun searchBondsUrl(query: String) =
         "$baseUrl//iss/securities.csv?engine=stock&market=bonds&iss.meta=off&q=${encode(query)}"
 
-    private fun encode(s: String) = URLEncoder.encode(s, Charsets.UTF_8)
+    private fun encode(s: String) = URLEncoder.encode(s, "UTF-8")
 }
 
+// TODO: use HttpURLConnection? https://developer.android.com/reference/java/net/HttpURLConnection
 internal class MoexServiceImpl(
     private val client: HttpClient = createHttpClient()
 ) : MoexService {

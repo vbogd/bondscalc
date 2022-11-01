@@ -11,6 +11,8 @@ import com.nxtru.bondscalc.domain.usecase.BondCalcUseCase
 import com.nxtru.bondscalc.domain.usecase.SaveBondParamsUseCase
 import com.nxtru.bondscalc.domain.usecase.LoadBondParamsUseCase
 
+// https://developer.android.com/kotlin/coroutines/coroutines-best-practices
+
 private const val TAG = "MainViewModel"
 
 class MainViewModel(
@@ -24,8 +26,12 @@ class MainViewModel(
     var calcResult by mutableStateOf(BondCalcUIResult.UNDEFINED)
         private set
 
+    var tickerSelectionState by mutableStateOf(TickerSelectionUIState(""))
+        private set
+
     fun onBondParamsChange(value: BondParams) {
         bondParams = value
+        updateTickerSelectionTicker()
         saveBondParams()
         calculate()
     }
@@ -43,6 +49,12 @@ class MainViewModel(
 
     private fun loadBondParams() {
         bondParams = loadBondParamsUseCase.execute()
+        updateTickerSelectionTicker()
+    }
+
+    private fun updateTickerSelectionTicker() {
+        if (tickerSelectionState.ticker != bondParams.ticker)
+            tickerSelectionState = tickerSelectionState.copy(ticker = bondParams.ticker)
     }
 
     private fun calculate() {
@@ -71,3 +83,9 @@ data class BondCalcUIResult(
         val UNDEFINED = BondCalcUIResult("", "")
     }
 }
+
+data class TickerSelectionUIState(
+    val ticker: String,
+    val searching: Boolean = false,
+    val foundTickers: List<String>? = null
+)

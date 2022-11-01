@@ -20,12 +20,12 @@ fun TickerField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
+    searching: Boolean,
     tickers: List<String>?,
     onSearchTicker: (String) -> Unit,
     onSelectionDone: (String) -> Unit,
     onSelectionCancel: () -> Unit = {},
 ) {
-    val loadingStr = stringResource(R.string.loading)
     Box(
         modifier = modifier
     ) {
@@ -49,15 +49,30 @@ fun TickerField(
         )
         DropdownMenu(
             modifier = Modifier.fillMaxWidth(),
-            expanded = tickers != null,
+            expanded = tickers != null || searching,
             onDismissRequest = { onSelectionCancel() },
         ) {
-            tickers?.forEach { label ->
+            if (searching) {
                 DropdownMenuItem(
-                    text = { Text(text = label) },
-                    enabled = label != loadingStr,
-                    onClick = { onSelectionDone(label) }
+                    text = { Text(text = stringResource(R.string.loading)) },
+                    enabled = false,
+                    onClick = {}
                 )
+            } else if (tickers == null) {
+                null
+            } else if (tickers.isEmpty()) {
+                DropdownMenuItem(
+                    text = { Text(text = stringResource(R.string.not_found)) },
+                    enabled = false,
+                    onClick = {}
+                )
+            } else {
+                tickers.forEach { label ->
+                    DropdownMenuItem(
+                        text = { Text(text = label) },
+                        onClick = { onSelectionDone(label) }
+                    )
+                }
             }
         }
     }
@@ -68,29 +83,35 @@ fun TickerField(
 fun PreviewTickerField() {
     var ticker by remember { mutableStateOf("ОФЗ") }
     var tickers by remember { mutableStateOf<List<String>?>(null) }
-    val loadingStr = stringResource(R.string.loading)
+    var searching by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     TickerField(
         value = ticker,
         onValueChange = { ticker = it },
         modifier = Modifier.fillMaxWidth(),
         tickers = tickers,
+        searching = searching,
         onSearchTicker = {
             println("Searching '$it'...")
-            tickers = listOf(loadingStr)
+            searching = true
             coroutineScope.launch {
                 tickers = loadEmul(it)
+                searching = false
             }
         },
         onSelectionDone = {
             ticker = it
             tickers = null
             println("Ticker selected: '$it'")
+        },
+        onSelectionCancel = {
+            tickers = null
+            searching = false
         }
     )
 }
 
 suspend fun loadEmul(query: String): List<String> {
     delay(1000L)
-    return listOf("$query-1", "$query-2", "$query-3")
+    return listOf()
 }
