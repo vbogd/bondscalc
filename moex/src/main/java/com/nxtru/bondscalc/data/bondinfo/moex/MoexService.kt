@@ -19,7 +19,7 @@ private object MoexRoutes {
 }
 
 // TODO: use HttpURLConnection? https://developer.android.com/reference/java/net/HttpURLConnection
-class MoexServiceImpl(
+class MoexService(
     private val client: HttpClient = createHttpClient()
 ) : BondInfoService {
     // see http://iss.moex.com/iss/reference/5
