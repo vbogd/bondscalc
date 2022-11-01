@@ -1,6 +1,5 @@
 package com.nxtru.bondscalc.presentation.widgets
 
-import android.view.KeyEvent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions
@@ -8,7 +7,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,14 +39,14 @@ fun TickerField(
             keyboardActions = KeyboardActions(
                 onDone = { onSearchTicker(value); showMenu = true },
             ),
-            modifier = Modifier.fillMaxWidth().onKeyEvent {
-                if (it.nativeKeyEvent.keyCode == KeyEvent.KEYCODE_ENTER) {
-                    onSearchTicker(value)
-                    showMenu = true
-                    true
-                } else
-                    false
-            }
+            modifier = Modifier.fillMaxWidth() //.onKeyEvent {
+//                if (it.nativeKeyEvent.keyCode == KeyEvent.KEYCODE_ENTER) {
+//                    onSearchTicker(value)
+//                    showMenu = true
+//                    true
+//                } else
+//                    false
+//            }
         )
         DropdownMenu(
             modifier = Modifier.fillMaxWidth(),

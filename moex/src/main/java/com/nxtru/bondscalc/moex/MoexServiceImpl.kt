@@ -8,7 +8,7 @@ import io.ktor.client.request.*
 import java.net.URLEncoder
 
 private object MoexRoutes {
-    private const val baseUrl = "http://iss.moex.com"
+    private const val baseUrl = "https://iss.moex.com"
 
     fun searchBondsUrl(query: String) =
         "$baseUrl//iss/securities.csv?engine=stock&market=bonds&iss.meta=off&q=${encode(query)}"

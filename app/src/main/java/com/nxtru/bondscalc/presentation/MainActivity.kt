@@ -38,6 +38,10 @@ fun MainScreen(viewModel: MainViewModel) {
         bondParams = viewModel.bondParams,
         calcResult = viewModel.calcResult,
         onBondParamsChange = { viewModel.onBondParamsChange(it) },
+        tickersList = listOf("1", "2"),
+        onSearchTicker = {},
+        onTickerSelectionDone = {},
+        onTickerSelectionCancel = {}
     )
 }
 
@@ -45,7 +49,11 @@ fun MainScreen(viewModel: MainViewModel) {
 fun MainContent(
     bondParams: BondParams,
     calcResult: BondCalcUIResult,
-    onBondParamsChange: (BondParams) -> Unit
+    onBondParamsChange: (BondParams) -> Unit,
+    tickersList: List<String>,
+    onSearchTicker: (String) -> Unit,
+    onTickerSelectionDone: (String) -> Unit,
+    onTickerSelectionCancel: () -> Unit = {},
 ) {
     return MainTheme {
         // A surface container using the 'background' color from the theme
@@ -69,13 +77,13 @@ fun MainContent(
             ) {
                 TickerField(
                     value = bondParams.ticker,
+                    onValueChange = { onBondParamsChange(bondParams.copy(ticker = it)) },
                     modifier = Modifier.fillMaxWidth(),
-                    onDone = {
-                        onBondParamsChange(bondParams.copy(commission = it))
-                    }
-                ) {
-                    onBondParamsChange(bondParams.copy(ticker = it))
-                }
+                    tickers = tickersList,
+                    onSearchTicker = onSearchTicker,
+                    onSelectionDone = onTickerSelectionDone,
+                    onSelectionCancel = onTickerSelectionCancel
+                )
                 Row(modifier = Modifier.fillMaxWidth()) {
                     Column(Modifier.weight(1f)) {
                         NumericField(stringResource(R.string.commission), bondParams.commission) {
@@ -242,5 +250,13 @@ fun Header(text: String) {
 //)
 @Composable
 fun PreviewMessageCard() {
-    MainContent(BondParams.EMPTY, BondCalcUIResult("14.5₽", "9.5%")) {}
+    MainContent(
+        BondParams.EMPTY,
+        BondCalcUIResult("14.5₽", "9.5%"),
+        onBondParamsChange = {},
+        tickersList = listOf("1", "2"),
+        onSearchTicker = {},
+        onTickerSelectionDone = {},
+        onTickerSelectionCancel = {}
+    )
 }
