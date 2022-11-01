@@ -20,12 +20,11 @@ fun TickerField(
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    tickers: List<String>,
+    tickers: List<String>?,
     onSearchTicker: (String) -> Unit,
     onSelectionDone: (String) -> Unit,
     onSelectionCancel: () -> Unit = {},
 ) {
-    var showMenu by remember { mutableStateOf(false) }
     val loadingStr = stringResource(R.string.loading)
     Box(
         modifier = modifier
@@ -35,9 +34,9 @@ fun TickerField(
             onValueChange = onValueChange,
             label = { Text(stringResource(R.string.ticker)) },
             singleLine = true,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(
-                onDone = { onSearchTicker(value); showMenu = true },
+                onSearch = { onSearchTicker(value) },
             ),
             modifier = Modifier.fillMaxWidth() //.onKeyEvent {
 //                if (it.nativeKeyEvent.keyCode == KeyEvent.KEYCODE_ENTER) {
@@ -50,17 +49,14 @@ fun TickerField(
         )
         DropdownMenu(
             modifier = Modifier.fillMaxWidth(),
-            expanded = showMenu,
-            onDismissRequest = { showMenu = false; onSelectionCancel() },
+            expanded = tickers != null,
+            onDismissRequest = { onSelectionCancel() },
         ) {
-            tickers.forEach { label ->
+            tickers?.forEach { label ->
                 DropdownMenuItem(
                     text = { Text(text = label) },
                     enabled = label != loadingStr,
-                    onClick = {
-                        showMenu = false
-                        onSelectionDone(label)
-                    }
+                    onClick = { onSelectionDone(label) }
                 )
             }
         }
@@ -71,7 +67,7 @@ fun TickerField(
 @Composable
 fun PreviewTickerField() {
     var ticker by remember { mutableStateOf("ОФЗ") }
-    var tickers by remember { mutableStateOf<List<String>>(emptyList()) }
+    var tickers by remember { mutableStateOf<List<String>?>(null) }
     val loadingStr = stringResource(R.string.loading)
     val coroutineScope = rememberCoroutineScope()
     TickerField(
@@ -88,6 +84,7 @@ fun PreviewTickerField() {
         },
         onSelectionDone = {
             ticker = it
+            tickers = null
             println("Ticker selected: '$it'")
         }
     )
