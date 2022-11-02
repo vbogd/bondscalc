@@ -1,12 +1,12 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.nxtru.bondscalc.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -56,11 +56,7 @@ fun MainContent(
     onTickerSelectionCancel: () -> Unit = {},
 ) {
     return MainTheme {
-        // A surface container using the 'background' color from the theme
-        Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
+        Scaffold(
             // https://stackoverflow.com/a/72608560
 //            modifier = Modifier
 //                .fillMaxSize()
@@ -68,24 +64,24 @@ fun MainContent(
 //                .navigationBarsPadding()
 //                .imePadding()
 //                .verticalScroll(rememberScrollState()),
-            color = MaterialTheme.colorScheme.background
-        ) {
+//            color = MaterialTheme.colorScheme.background
+        ) { contentPadding ->
             val padding = 8.dp
-            val paddingModifier = Modifier.padding(padding)
+            val rowModifier = Modifier.fillMaxWidth().padding(horizontal = padding)
             Column(
-                modifier = paddingModifier //.verticalScroll(rememberScrollState())
+                modifier = Modifier.padding(contentPadding)
             ) {
                 TickerField(
                     value = tickerSelectionState.ticker,
                     onValueChange = { onBondParamsChange(bondParams.copy(ticker = it)) },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = rowModifier,
                     tickers = tickerSelectionState.foundTickers,
                     searching = tickerSelectionState.searching,
                     onSearchTicker = onSearchTicker,
                     onSelectionDone = onTickerSelectionDone,
                     onSelectionCancel = onTickerSelectionCancel
                 )
-                Row(modifier = Modifier.fillMaxWidth()) {
+                Row(modifier = rowModifier) {
                     Column(Modifier.weight(1f)) {
                         NumericField(stringResource(R.string.commission), bondParams.commission) {
                             onBondParamsChange(bondParams.copy(commission = it))
@@ -98,7 +94,7 @@ fun MainContent(
                         }
                     }
                 }
-                Row(modifier = Modifier.fillMaxWidth()) {
+                Row(modifier = rowModifier) {
                     Column(Modifier.weight(1f)) {
                         MoneyField(stringResource(R.string.par_value), bondParams.parValue) {
                             onBondParamsChange(bondParams.copy(parValue = it))
@@ -111,8 +107,11 @@ fun MainContent(
                         }
                     }
                 }
-                Header(stringResource(R.string.buy))
-                Row(modifier = Modifier.fillMaxWidth()) {
+                Header(
+                    text = stringResource(R.string.buy),
+                    modifier = rowModifier,
+                )
+                Row(modifier = rowModifier) {
                     Column(Modifier.weight(1f)) {
                         DateField(stringResource(R.string.date), bondParams.buyDate) {
                             onBondParamsChange(bondParams.copy(buyDate = it))
@@ -125,9 +124,12 @@ fun MainContent(
                         }
                     }
                 }
-                Header(stringResource(R.string.sell))
+                Header(
+                    text = stringResource(R.string.sell),
+                    modifier = rowModifier
+                )
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = rowModifier,
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
@@ -139,7 +141,7 @@ fun MainContent(
                         onBondParamsChange(bondParams.copy(tillMaturity = it))
                     })
                 }
-                Row(modifier = Modifier.fillMaxWidth()) {
+                Row(modifier = rowModifier) {
                     Column(Modifier.weight(1f)) {
                         DateField(stringResource(R.string.date), bondParams.sellDate) {
                             onBondParamsChange(bondParams.copy(sellDate = it))
@@ -153,12 +155,12 @@ fun MainContent(
                     }
                 }
                 Card(
-                    modifier = Modifier
-                        .padding(vertical = padding)
-                        .fillMaxWidth(),
+                    modifier = rowModifier
+                        .padding(vertical = padding),
 
 //                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
                 ) {
+                    val paddingModifier = Modifier.padding(padding)
                     Column(
                         modifier = paddingModifier,
                         verticalArrangement = Arrangement.spacedBy(padding),
@@ -190,7 +192,6 @@ fun ResultRow(label: String, value: String) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NumericField(label: String, value: String, onValueChange: (String) -> Unit) {
     OutlinedTextField(
@@ -205,7 +206,6 @@ fun NumericField(label: String, value: String, onValueChange: (String) -> Unit) 
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MoneyField(label: String, value: String, onValueChange: (String) -> Unit) {
     OutlinedTextField(
@@ -220,7 +220,6 @@ fun MoneyField(label: String, value: String, onValueChange: (String) -> Unit) {
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DateField(label: String, value: String, onValueChange: (String) -> Unit) {
     OutlinedTextField(
@@ -235,9 +234,10 @@ fun DateField(label: String, value: String, onValueChange: (String) -> Unit) {
 }
 
 @Composable
-fun Header(text: String) {
+fun Header(text: String, modifier: Modifier = Modifier) {
     Text(
         text = text,
+        modifier = modifier,
         color = MaterialTheme.colorScheme.secondary,
         style = MaterialTheme.typography.titleLarge
     )
