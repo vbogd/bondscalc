@@ -22,13 +22,18 @@ import com.nxtru.bondscalc.R
 import com.nxtru.bondscalc.domain.models.BondParams
 import com.nxtru.bondscalc.presentation.ui.theme.MainTheme
 import com.nxtru.bondscalc.presentation.widgets.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.emptyFlow
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 //        window.setDecorFitsSystemWindows(false)
-        setContent { MainScreen(viewModel(factory = MainViewModelFactory(applicationContext))) }
+        setContent {
+            MainScreen(viewModel(factory = MainViewModelFactory(applicationContext)))
+        }
     }
 }
 
@@ -38,6 +43,7 @@ fun MainScreen(viewModel: MainViewModel) {
         bondParams = viewModel.bondParams,
         calcResult = viewModel.calcResult,
         tickerSelectionState = viewModel.tickerSelectionState,
+        errorMessageCode = viewModel.errorMessageCode,
         onBondParamsChange = viewModel::onBondParamsChange,
         onSearchTicker = viewModel::onSearchTicker,
         onTickerSelectionDone = viewModel::onTickerSelectionDone,
@@ -50,13 +56,26 @@ fun MainContent(
     bondParams: BondParams,
     calcResult: BondCalcUIResult,
     tickerSelectionState: TickerSelectionUIState,
+    errorMessageCode: Flow<Int>,
     onBondParamsChange: (BondParams) -> Unit,
     onSearchTicker: (String) -> Unit,
     onTickerSelectionDone: (String) -> Unit,
     onTickerSelectionCancel: () -> Unit = {},
 ) {
     return MainTheme {
+        // see https://blog.devgenius.io/snackbars-in-jetpack-compose-d1b553224dca
+        // see https://stackoverflow.com/a/73006218
+        val snackbarHostState = remember { SnackbarHostState() }
+        LaunchedEffect(Unit) {
+            errorMessageCode.collectLatest { errCode ->
+                snackbarHostState.showSnackbar(
+                    message = getErrorMessage(errCode),
+                    duration = SnackbarDuration.Short
+                )
+            }
+        }
         Scaffold(
+            snackbarHost = { SnackbarHost(snackbarHostState) },
             // https://stackoverflow.com/a/72608560
 //            modifier = Modifier
 //                .fillMaxSize()
@@ -254,10 +273,18 @@ fun PreviewMessageCard() {
     MainContent(
         BondParams.EMPTY,
         BondCalcUIResult("14.5₽", "9.5%"),
+        errorMessageCode = emptyFlow(),
         onBondParamsChange = {},
         tickerSelectionState = TickerSelectionUIState("ОФЗ"),
         onSearchTicker = {},
         onTickerSelectionDone = {},
         onTickerSelectionCancel = {}
     )
+}
+
+private fun getErrorMessage(errCode: Int): String {
+    // TODO: load resource string
+    return if (errCode == R.string.failed_to_load)
+        "Ошибка загрузки"
+    else "Ошибка $errCode"
 }

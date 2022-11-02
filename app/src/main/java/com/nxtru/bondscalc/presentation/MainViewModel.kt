@@ -12,6 +12,8 @@ import com.nxtru.bondscalc.domain.usecase.*
 import com.nxtru.bondscalc.domain.usecase.bondinfo.*
 import kotlinx.coroutines.launch
 import com.nxtru.bondscalc.R
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 
 // https://developer.android.com/kotlin/coroutines/coroutines-best-practices
 
@@ -23,12 +25,19 @@ class MainViewModel(
     private val searchTickersUseCase: SearchTickersUseCase,
 ) : ViewModel() {
 
+    /*
+     * State.
+     */
     var bondParams by mutableStateOf(BondParams.EMPTY)
         private set
     var calcResult by mutableStateOf(BondCalcUIResult.UNDEFINED)
         private set
     var tickerSelectionState by mutableStateOf(TickerSelectionUIState(""))
         private set
+    // see https://blog.devgenius.io/snackbars-in-jetpack-compose-d1b553224dca
+    private val _errorMessageCode = MutableSharedFlow<Int>()
+    val errorMessageCode = _errorMessageCode.asSharedFlow()
+
     private val bondCalcUseCase = BondCalcUseCase()
 
     init {
@@ -47,7 +56,6 @@ class MainViewModel(
      * Ticker selection callbacks.
      */
     fun onSearchTicker(ticker: String) {
-        // TODO: implement
         viewModelScope.launch {
             tickerSelectionState = tickerSelectionState.copy(searching = true)
             val foundTickers = searchTickersUseCase(ticker)
@@ -81,8 +89,8 @@ class MainViewModel(
     /*
      * Aux functions.
      */
-    private fun showError(msgId: Int) {
-        // TODO: implement
+    private suspend fun showError(msgId: Int) {
+        _errorMessageCode.emit(msgId)
     }
 
     private fun saveBondParams() {
