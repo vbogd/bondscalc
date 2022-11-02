@@ -16,4 +16,5 @@
     <string name="dd_mm_yyyy">DD.MM.YYYY</string>
     <string name="loading">Загрузка...</string>
     <string name="not_found">Не найдено</string>
+    <string name="failed_to_load">Ошибка загрузки</string>
 </resources>

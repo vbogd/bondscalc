@@ -3,10 +3,12 @@ package com.nxtru.bondscalc.presentation
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.nxtru.bondscalc.data.bondinfo.moex.MoexService
 import com.nxtru.bondscalc.data.repository.BondParamsRepositoryImpl
 import com.nxtru.bondscalc.data.storage.SharedPrefsBondParamsStorage
 import com.nxtru.bondscalc.domain.usecase.SaveBondParamsUseCase
 import com.nxtru.bondscalc.domain.usecase.LoadBondParamsUseCase
+import com.nxtru.bondscalc.domain.usecase.bondinfo.SearchTickersUseCase
 
 class MainViewModelFactory(context: Context) : ViewModelProvider.Factory {
 
@@ -22,6 +24,10 @@ class MainViewModelFactory(context: Context) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return MainViewModel(saveBondParamsUseCase, loadBondParamsUseCase) as T
+        return MainViewModel(
+            saveBondParamsUseCase,
+            loadBondParamsUseCase,
+            SearchTickersUseCase(MoexService())
+        ) as T
     }
 }

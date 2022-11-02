@@ -5,11 +5,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.nxtru.bondscalc.domain.models.BondParams
 import com.nxtru.bondscalc.domain.models.BondResults
-import com.nxtru.bondscalc.domain.usecase.BondCalcUseCase
-import com.nxtru.bondscalc.domain.usecase.SaveBondParamsUseCase
-import com.nxtru.bondscalc.domain.usecase.LoadBondParamsUseCase
+import com.nxtru.bondscalc.domain.usecase.*
+import com.nxtru.bondscalc.domain.usecase.bondinfo.*
+import kotlinx.coroutines.launch
+import com.nxtru.bondscalc.R
 
 // https://developer.android.com/kotlin/coroutines/coroutines-best-practices
 
@@ -17,18 +19,16 @@ private const val TAG = "MainViewModel"
 
 class MainViewModel(
     private val saveBondParamsUseCase: SaveBondParamsUseCase,
-    private val loadBondParamsUseCase: LoadBondParamsUseCase
+    private val loadBondParamsUseCase: LoadBondParamsUseCase,
+    private val searchTickersUseCase: SearchTickersUseCase,
 ) : ViewModel() {
 
     var bondParams by mutableStateOf(BondParams.EMPTY)
         private set
-
     var calcResult by mutableStateOf(BondCalcUIResult.UNDEFINED)
         private set
-
     var tickerSelectionState by mutableStateOf(TickerSelectionUIState(""))
         private set
-
     private val bondCalcUseCase = BondCalcUseCase()
 
     init {
@@ -48,9 +48,17 @@ class MainViewModel(
      */
     fun onSearchTicker(ticker: String) {
         // TODO: implement
-        tickerSelectionState = tickerSelectionState.copy(
-            foundTickers = listOf("1", "2"),
-        )
+        viewModelScope.launch {
+            tickerSelectionState = tickerSelectionState.copy(searching = true)
+            val foundTickers = searchTickersUseCase(ticker)
+            tickerSelectionState = tickerSelectionState.copy(
+                foundTickers = foundTickers,
+                searching = false,
+            )
+            if (foundTickers == null) {
+                showError(R.string.failed_to_load)
+            }
+        }
     }
 
     fun onTickerSelectionDone(ticker: String) {
@@ -73,6 +81,10 @@ class MainViewModel(
     /*
      * Aux functions.
      */
+    private fun showError(msgId: Int) {
+        // TODO: implement
+    }
+
     private fun saveBondParams() {
         saveBondParamsUseCase.execute(bondParams)
     }
@@ -117,5 +129,5 @@ data class BondCalcUIResult(
 data class TickerSelectionUIState(
     val ticker: String,
     val searching: Boolean = false,
-    val foundTickers: List<String>? = null
+    val foundTickers: List<String>? = null,
 )

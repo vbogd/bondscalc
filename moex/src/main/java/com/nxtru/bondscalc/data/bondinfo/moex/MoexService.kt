@@ -7,6 +7,7 @@ import io.ktor.client.call.*
 import io.ktor.client.engine.android.*
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*
+import io.ktor.http.*
 import java.net.URLEncoder
 
 private object MoexRoutes {
@@ -19,14 +20,22 @@ private object MoexRoutes {
 }
 
 // TODO: use HttpURLConnection? https://developer.android.com/reference/java/net/HttpURLConnection
-class MoexService(
+class MoexService : BondInfoService {
     private val client: HttpClient = createHttpClient()
-) : BondInfoService {
+
     // see http://iss.moex.com/iss/reference/5
-    override suspend fun searchBonds(query: String): List<Ticker> {
-        // TODO: CSV response is in windows-1251 encoding
-        val resp = client.get { url(MoexRoutes.searchBondsUrl(query)) }
-        return extractTickers(query, resp.body<String>().lines())
+    override suspend fun searchBonds(query: String): List<Ticker>? {
+        try {
+            // TODO: CSV response is in windows-1251 encoding
+            val resp = client.get { url(MoexRoutes.searchBondsUrl(query)) }
+            return if (resp.status == HttpStatusCode.OK)
+                extractTickers(query, resp.body<String>().lines())
+            else
+                emptyList()
+        } catch (e: Exception) {
+            // TODO: add logging
+            return null
+        }
     }
 }
 

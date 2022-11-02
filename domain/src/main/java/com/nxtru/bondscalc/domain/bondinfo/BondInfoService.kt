@@ -9,6 +9,8 @@ interface BondInfoService {
     /**
      * Search bonds.
      * "query" must have length >=3
+     *
+     * @return null in case of error
      */
-    suspend fun searchBonds(query: String): List<Ticker>
+    suspend fun searchBonds(query: String): List<Ticker>?
 }

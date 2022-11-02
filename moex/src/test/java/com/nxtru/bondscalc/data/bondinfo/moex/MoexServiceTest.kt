@@ -1,23 +1,21 @@
 package com.nxtru.bondscalc.data.bondinfo.moex
 
-import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 
 import org.junit.Test
-import kotlin.system.measureTimeMillis
 
 class MoexServiceTest {
 
-    @Test
-    fun searchBonds() {
-        val subj = MoexService()
-        measureTimeMillis {
-            runBlocking {
-                val resp = subj.searchBonds("офз 29").joinToString("\n")
-                println(">>>\n$resp")
-            }
-        }
-    }
+//    @Test
+//    fun searchBonds() {
+//        val subj = MoexService()
+//        measureTimeMillis {
+//            runBlocking {
+//                val resp = subj.searchBonds("офз 29").joinToString("\n")
+//                println(">>>\n$resp")
+//            }
+//        }
+//    }
 
     @Test
     fun extractTickerTest() {
