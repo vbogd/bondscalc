@@ -17,6 +17,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.nxtru.bondscalc.R
 import com.nxtru.bondscalc.domain.models.BondParams
@@ -28,9 +29,9 @@ import kotlinx.coroutines.flow.emptyFlow
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        // see https://developer.android.com/reference/kotlin/androidx/compose/foundation/layout/package-summary#(androidx.compose.ui.Modifier).imePadding()
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
-//        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-//        window.setDecorFitsSystemWindows(false)
         setContent {
             MainScreen(viewModel(factory = MainViewModelFactory(applicationContext)))
         }
@@ -77,13 +78,12 @@ fun MainContent(
         Scaffold(
             snackbarHost = { SnackbarHost(snackbarHostState) },
             // https://stackoverflow.com/a/72608560
-//            modifier = Modifier
+            modifier = Modifier
 //                .fillMaxSize()
 //                .statusBarsPadding()
 //                .navigationBarsPadding()
-//                .imePadding()
+                .imePadding()
 //                .verticalScroll(rememberScrollState()),
-//            color = MaterialTheme.colorScheme.background
         ) { contentPadding ->
             val padding = 8.dp
             val rowModifier = Modifier.fillMaxWidth().padding(horizontal = padding)
