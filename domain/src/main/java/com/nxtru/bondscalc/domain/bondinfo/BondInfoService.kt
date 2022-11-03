@@ -1,6 +1,6 @@
 package com.nxtru.bondscalc.domain.bondinfo
 
-import com.nxtru.bondscalc.domain.models.Ticker
+import com.nxtru.bondscalc.domain.models.BriefBondInfo
 
 /**
  * Loads information about bonds.
@@ -12,5 +12,5 @@ interface BondInfoService {
      *
      * @return null in case of error
      */
-    suspend fun searchBonds(query: String): List<Ticker>?
+    suspend fun searchBonds(query: String): List<BriefBondInfo>?
 }

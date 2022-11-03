@@ -1,7 +1,7 @@
 package com.nxtru.bondscalc.data.bondinfo.moex
 
 import com.nxtru.bondscalc.domain.bondinfo.BondInfoService
-import com.nxtru.bondscalc.domain.models.Ticker
+import com.nxtru.bondscalc.domain.models.BriefBondInfo
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.android.*
@@ -24,7 +24,7 @@ class MoexService : BondInfoService {
     private val client: HttpClient = createHttpClient()
 
     // see http://iss.moex.com/iss/reference/5
-    override suspend fun searchBonds(query: String): List<Ticker>? {
+    override suspend fun searchBonds(query: String): List<BriefBondInfo>? {
         try {
             // TODO: CSV response is in windows-1251 encoding
             val resp = client.get { url(MoexRoutes.searchBondsUrl(query)) }
@@ -66,16 +66,23 @@ private fun createHttpClient(): HttpClient {
     }
 }
 
-internal fun extractTickers(query: String, csvLines: List<String>): List<Ticker> =
+internal fun extractTickers(query: String, csvLines: List<String>): List<BriefBondInfo> =
     csvLines
         .mapNotNull { extractTicker(it) }
         .distinct()
-        .filter { it.contains(query, ignoreCase = true) }
-        .sorted()
+        .filter {
+            it.ticker.contains(query, ignoreCase = true) ||
+                    it.isin.contains(query, ignoreCase = true)
+        }
+        .filter(BriefBondInfo::isTraded)
+        .sortedBy(BriefBondInfo::ticker)
 
-internal fun extractTicker(csv: String): Ticker? {
-    val limit = 4
+internal fun extractTicker(csv: String): BriefBondInfo? {
+    val limit = 8
     val fields = csv.split(";", ignoreCase = false, limit = limit)
     if (fields.size != limit) return null
-    return fields[2]
+    val ticker = fields[2]
+    val isin = fields[5]
+    val isTraded = fields[6] == "1"
+    return BriefBondInfo(ticker, isin, isTraded)
 }
