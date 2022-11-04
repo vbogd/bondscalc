@@ -21,7 +21,7 @@ class MoexServiceTest {
 //    fun loadBondInfo() {
 //        val subj = MoexService()
 //        kotlinx.coroutines.runBlocking {
-//            val resp = subj.loadBondInfo("RU000A104ZQ9")
+//            val resp = subj.loadBondInfo("RU000A100EG3")
 //            println(">>>\n$resp")
 //        }
 //    }

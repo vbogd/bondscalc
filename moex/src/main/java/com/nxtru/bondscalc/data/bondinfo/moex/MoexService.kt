@@ -47,8 +47,7 @@ class MoexService : BondInfoService {
             // TODO: CSV response is in windows-1251 encoding
             val resp = client.get { url(MoexRoutes.loadBondInfoUrl(isin)) }
             return if (resp.status == HttpStatusCode.OK) {
-                extreactBondInfo(resp.body<String>().lines())
-                null
+                return extreactBondInfo(resp.body<String>().lines())
             } else
                 null
         } catch (e: Exception) {

@@ -8,6 +8,7 @@ import com.nxtru.bondscalc.data.repository.BondParamsRepositoryImpl
 import com.nxtru.bondscalc.data.storage.SharedPrefsBondParamsStorage
 import com.nxtru.bondscalc.domain.usecase.SaveBondParamsUseCase
 import com.nxtru.bondscalc.domain.usecase.LoadBondParamsUseCase
+import com.nxtru.bondscalc.domain.usecase.bondinfo.LoadBondInfoUseCase
 import com.nxtru.bondscalc.domain.usecase.bondinfo.SearchTickersUseCase
 
 class MainViewModelFactory(context: Context) : ViewModelProvider.Factory {
@@ -24,10 +25,12 @@ class MainViewModelFactory(context: Context) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        val bondInfoService = MoexService()
         return MainViewModel(
             saveBondParamsUseCase,
             loadBondParamsUseCase,
-            SearchTickersUseCase(MoexService())
+            SearchTickersUseCase(bondInfoService),
+            LoadBondInfoUseCase(bondInfoService)
         ) as T
     }
 }

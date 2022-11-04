@@ -12,6 +12,8 @@ import com.nxtru.bondscalc.domain.usecase.*
 import com.nxtru.bondscalc.domain.usecase.bondinfo.*
 import kotlinx.coroutines.launch
 import com.nxtru.bondscalc.R
+import com.nxtru.bondscalc.domain.models.BondInfo
+import com.nxtru.bondscalc.domain.models.BriefBondInfo
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
@@ -23,6 +25,7 @@ class MainViewModel(
     private val saveBondParamsUseCase: SaveBondParamsUseCase,
     private val loadBondParamsUseCase: LoadBondParamsUseCase,
     private val searchTickersUseCase: SearchTickersUseCase,
+    private val loadBondInfoUseCase: LoadBondInfoUseCase,
 ) : ViewModel() {
 
     /*
@@ -32,11 +35,14 @@ class MainViewModel(
         private set
     var calcResult by mutableStateOf(BondCalcUIResult.UNDEFINED)
         private set
+    var bondInfo by mutableStateOf<BondInfo?>(null)
+        private set
     var tickerSelectionState by mutableStateOf(TickerSelectionUIState(""))
         private set
     // see https://blog.devgenius.io/snackbars-in-jetpack-compose-d1b553224dca
     private val _errorMessageCode = MutableSharedFlow<Int>()
     val errorMessageCode = _errorMessageCode.asSharedFlow()
+    private var foundTickers: List<BriefBondInfo> = emptyList()
 
     private val bondCalcUseCase = BondCalcUseCase()
 
@@ -60,9 +66,10 @@ class MainViewModel(
             tickerSelectionState = tickerSelectionState.copy(searching = true)
             val foundTickers = searchTickersUseCase(ticker)
             tickerSelectionState = tickerSelectionState.copy(
-                foundTickers = foundTickers,
+                foundTickers = foundTickers?.map(BriefBondInfo::ticker),
                 searching = false,
             )
+            this@MainViewModel.foundTickers = foundTickers ?: emptyList()
             if (foundTickers == null) {
                 showError(R.string.failed_to_load)
             }
@@ -76,7 +83,14 @@ class MainViewModel(
         tickerSelectionState = tickerSelectionState.copy(
             foundTickers = null,
         )
-        // TODO: load bond details
+        val isin = foundTickers.find { it.ticker == ticker }?.isin
+        if (isin == null)
+            bondInfo = null
+        else {
+            viewModelScope.launch {
+                bondInfo = loadBondInfoUseCase(isin)
+            }
+        }
     }
 
     fun onTickerSelectionCancel() {
