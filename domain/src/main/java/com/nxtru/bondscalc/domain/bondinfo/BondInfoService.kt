@@ -1,5 +1,6 @@
 package com.nxtru.bondscalc.domain.bondinfo
 
+import com.nxtru.bondscalc.domain.models.BondInfo
 import com.nxtru.bondscalc.domain.models.BriefBondInfo
 
 /**
@@ -13,4 +14,11 @@ interface BondInfoService {
      * @return null in case of error
      */
     suspend fun searchBonds(query: String): List<BriefBondInfo>?
+
+    /**
+     * Load bond info.
+     *
+     * @return null in case of error
+     */
+    suspend fun loadBondInfo(isin: String): BondInfo?
 }

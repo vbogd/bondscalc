@@ -1,5 +1,6 @@
 package com.nxtru.bondscalc.data.bondinfo.moex
 
+import com.nxtru.bondscalc.domain.models.BondInfo
 import com.nxtru.bondscalc.domain.models.BriefBondInfo
 import org.junit.Assert.*
 
@@ -12,6 +13,15 @@ class MoexServiceTest {
 //        val subj = MoexService()
 //        kotlinx.coroutines.runBlocking {
 //            val resp = subj.searchBonds("офз 29")?.map(BriefBondInfo::ticker)?.joinToString("\n")
+//            println(">>>\n$resp")
+//        }
+//    }
+//
+//    @Test
+//    fun loadBondInfo() {
+//        val subj = MoexService()
+//        kotlinx.coroutines.runBlocking {
+//            val resp = subj.loadBondInfo("RU000A104ZQ9")
 //            println(">>>\n$resp")
 //        }
 //    }
@@ -64,8 +74,21 @@ class MoexServiceTest {
             extractTickers("ОФЗ 299", lines)
         )
     }
+
+    @Test
+    fun extreactBondInfoTest() {
+        val lines = readLines("/extractTickets/RU000A104ZQ9.csv")
+        assertEquals(
+            BondInfo(ticker="ВТБ Б1-311", isin="RU000A104ZQ9", parValue="1000", coupon="7.500", maturityDate="27.07.2023"),
+            extreactBondInfo(lines)
+        )
+        assertEquals(
+            null,
+            extreactBondInfo(listOf("RU000A104ZQ9;TQCB;ВТБ Б1-311"))
+        )
+    }
 }
 
-fun readLines(resource: String): List<String> =
+private fun readLines(resource: String): List<String> =
     object {}.javaClass.getResource(resource)?.readText()?.lines()
         ?: throw IllegalArgumentException("Resource not found: $resource")

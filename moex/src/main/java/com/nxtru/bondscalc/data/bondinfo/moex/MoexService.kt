@@ -1,6 +1,7 @@
 package com.nxtru.bondscalc.data.bondinfo.moex
 
 import com.nxtru.bondscalc.domain.bondinfo.BondInfoService
+import com.nxtru.bondscalc.domain.models.BondInfo
 import com.nxtru.bondscalc.domain.models.BriefBondInfo
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -15,6 +16,9 @@ private object MoexRoutes {
 
     fun searchBondsUrl(query: String) =
         "$baseUrl/iss/securities.csv?engine=stock&market=bonds&iss.meta=off&q=${encode(query)}"
+
+    fun loadBondInfoUrl(isin: String) =
+        "$baseUrl/iss/engines/stock/markets/bonds/securities/$isin.csv?iss.only=securities&iss.meta=off&iss.df=%25d.%25m.%25Y"
 
     private fun encode(s: String) = URLEncoder.encode(s, "UTF-8")
 }
@@ -32,6 +36,21 @@ class MoexService : BondInfoService {
                 extractTickers(query, resp.body<String>().lines())
             else
                 emptyList()
+        } catch (e: Exception) {
+            // TODO: add logging
+            return null
+        }
+    }
+
+    override suspend fun loadBondInfo(isin: String): BondInfo? {
+        try {
+            // TODO: CSV response is in windows-1251 encoding
+            val resp = client.get { url(MoexRoutes.loadBondInfoUrl(isin)) }
+            return if (resp.status == HttpStatusCode.OK) {
+                extreactBondInfo(resp.body<String>().lines())
+                null
+            } else
+                null
         } catch (e: Exception) {
             // TODO: add logging
             return null
@@ -81,10 +100,26 @@ internal fun extractTickers(query: String, csvLines: List<String>): List<BriefBo
 
 internal fun extractTicker(csv: String): BriefBondInfo? {
     val limit = 8
-    val fields = csv.split(";", ignoreCase = false, limit = limit)
+    val fields = csv.split(";", limit = limit)
     if (fields.size != limit) return null
-    val ticker = fields[2]
-    val isin = fields[5]
-    val isTraded = fields[6] == "1"
-    return BriefBondInfo(ticker, isin, isTraded)
+    return BriefBondInfo(
+        ticker = fields[2],
+        isin = fields[5],
+        isTraded = fields[6] == "1"
+    )
+}
+
+internal fun extreactBondInfo(csvLines: List<String>): BondInfo? {
+    val limit = 40
+    val fields = csvLines
+        .map { it.split(";", limit = limit) }
+        .firstOrNull { it.size == limit }
+        ?: return null
+    return BondInfo(
+        ticker = fields[2],
+        isin = fields[29],
+        parValue = fields[10],
+        coupon = fields[36],
+        maturityDate = fields[13],
+    )
 }
