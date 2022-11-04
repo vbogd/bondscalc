@@ -14,7 +14,7 @@ private object MoexRoutes {
     private const val baseUrl = "https://iss.moex.com"
 
     fun searchBondsUrl(query: String) =
-        "$baseUrl//iss/securities.csv?engine=stock&market=bonds&iss.meta=off&q=${encode(query)}"
+        "$baseUrl/iss/securities.csv?engine=stock&market=bonds&iss.meta=off&q=${encode(query)}"
 
     private fun encode(s: String) = URLEncoder.encode(s, "UTF-8")
 }
@@ -68,14 +68,16 @@ private fun createHttpClient(): HttpClient {
 
 internal fun extractTickers(query: String, csvLines: List<String>): List<BriefBondInfo> =
     csvLines
+        .asSequence()
         .mapNotNull { extractTicker(it) }
-        .distinct()
         .filter {
             it.ticker.contains(query, ignoreCase = true) ||
                     it.isin.contains(query, ignoreCase = true)
         }
         .filter(BriefBondInfo::isTraded)
+        .distinct()
         .sortedBy(BriefBondInfo::ticker)
+        .toList()
 
 internal fun extractTicker(csv: String): BriefBondInfo? {
     val limit = 8

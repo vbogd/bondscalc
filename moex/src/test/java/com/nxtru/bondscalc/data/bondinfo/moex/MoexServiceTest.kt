@@ -10,11 +10,9 @@ class MoexServiceTest {
 //    @Test
 //    fun searchBonds() {
 //        val subj = MoexService()
-//        measureTimeMillis {
-//            runBlocking {
-//                val resp = subj.searchBonds("офз 29").joinToString("\n")
-//                println(">>>\n$resp")
-//            }
+//        kotlinx.coroutines.runBlocking {
+//            val resp = subj.searchBonds("офз 29")?.map(BriefBondInfo::ticker)?.joinToString("\n")
+//            println(">>>\n$resp")
 //        }
 //    }
 
