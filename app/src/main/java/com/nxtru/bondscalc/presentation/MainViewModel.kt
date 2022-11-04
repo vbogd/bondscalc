@@ -88,7 +88,14 @@ class MainViewModel(
             bondInfo = null
         else {
             viewModelScope.launch {
-                bondInfo = loadBondInfoUseCase(secId)
+                val bondInfo = loadBondInfoUseCase(secId)
+                this@MainViewModel.bondInfo = bondInfo
+                if (bondInfo != null) {
+                    onBondParamsChange(bondParams.copy(
+                        coupon = bondInfo.coupon,
+                        parValue = bondInfo.parValue,
+                    ))
+                }
             }
         }
     }
