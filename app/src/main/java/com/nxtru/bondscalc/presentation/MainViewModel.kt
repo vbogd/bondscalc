@@ -83,12 +83,12 @@ class MainViewModel(
         tickerSelectionState = tickerSelectionState.copy(
             foundTickers = null,
         )
-        val isin = foundTickers.find { it.ticker == ticker }?.isin
-        if (isin == null)
+        val secId = foundTickers.find { it.ticker == ticker }?.secId
+        if (secId == null)
             bondInfo = null
         else {
             viewModelScope.launch {
-                bondInfo = loadBondInfoUseCase(isin)
+                bondInfo = loadBondInfoUseCase(secId)
             }
         }
     }

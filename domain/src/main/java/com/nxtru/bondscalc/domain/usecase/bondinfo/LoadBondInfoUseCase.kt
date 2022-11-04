@@ -6,7 +6,7 @@ import com.nxtru.bondscalc.domain.models.BondInfo
 class LoadBondInfoUseCase(
     private val loader: BondInfoService
 ) {
-    suspend operator fun invoke(isin: String): BondInfo? {
-        return loader.loadBondInfo(isin)
+    suspend operator fun invoke(secId: String): BondInfo? {
+        return loader.loadBondInfo(secId)
     }
 }

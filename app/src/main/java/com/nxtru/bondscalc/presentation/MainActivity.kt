@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.nxtru.bondscalc.R
+import com.nxtru.bondscalc.domain.models.BondInfo
 import com.nxtru.bondscalc.domain.models.BondParams
 import com.nxtru.bondscalc.presentation.ui.theme.MainTheme
 import com.nxtru.bondscalc.presentation.widgets.*
@@ -43,6 +44,7 @@ fun MainScreen(viewModel: MainViewModel) {
     MainContent(
         bondParams = viewModel.bondParams,
         calcResult = viewModel.calcResult,
+        bondInfo = viewModel.bondInfo,
         tickerSelectionState = viewModel.tickerSelectionState,
         errorMessageCode = viewModel.errorMessageCode,
         onBondParamsChange = viewModel::onBondParamsChange,
@@ -56,6 +58,7 @@ fun MainScreen(viewModel: MainViewModel) {
 fun MainContent(
     bondParams: BondParams,
     calcResult: BondCalcUIResult,
+    bondInfo: BondInfo?,
     tickerSelectionState: TickerSelectionUIState,
     errorMessageCode: Flow<Int>,
     onBondParamsChange: (BondParams) -> Unit,
@@ -189,6 +192,7 @@ fun MainContent(
                         ResultRow(stringResource(R.string.result_percent), calcResult.ytm)
                     }
                 }
+                Text(text = bondInfo?.toString() ?: "null")
             }
         }
     }
@@ -273,6 +277,7 @@ fun PreviewMessageCard() {
     MainContent(
         BondParams.EMPTY,
         BondCalcUIResult("14.5₽", "9.5%"),
+        bondInfo = null,
         errorMessageCode = emptyFlow(),
         onBondParamsChange = {},
         tickerSelectionState = TickerSelectionUIState("ОФЗ"),

@@ -92,7 +92,6 @@ fun PreviewTickerField() {
         tickers = tickers,
         searching = searching,
         onSearchTicker = {
-            println("Searching '$it'...")
             searching = true
             coroutineScope.launch {
                 tickers = loadEmul(it)
@@ -102,7 +101,6 @@ fun PreviewTickerField() {
         onSelectionDone = {
             ticker = it
             tickers = null
-            println("Ticker selected: '$it'")
         },
         onSelectionCancel = {
             tickers = null

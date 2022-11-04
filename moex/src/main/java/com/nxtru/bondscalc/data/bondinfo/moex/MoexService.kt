@@ -42,10 +42,10 @@ class MoexService : BondInfoService {
         }
     }
 
-    override suspend fun loadBondInfo(isin: String): BondInfo? {
+    override suspend fun loadBondInfo(secId: String): BondInfo? {
         try {
             // TODO: CSV response is in windows-1251 encoding
-            val resp = client.get { url(MoexRoutes.loadBondInfoUrl(isin)) }
+            val resp = client.get { url(MoexRoutes.loadBondInfoUrl(secId)) }
             return if (resp.status == HttpStatusCode.OK) {
                 return extreactBondInfo(resp.body<String>().lines())
             } else
@@ -102,6 +102,7 @@ internal fun extractTicker(csv: String): BriefBondInfo? {
     val fields = csv.split(";", limit = limit)
     if (fields.size != limit) return null
     return BriefBondInfo(
+        secId = fields[1],
         ticker = fields[2],
         isin = fields[5],
         isTraded = fields[6] == "1"
@@ -115,6 +116,7 @@ internal fun extreactBondInfo(csvLines: List<String>): BondInfo? {
         .firstOrNull { it.size == limit }
         ?: return null
     return BondInfo(
+        secId = fields[0],
         ticker = fields[2],
         isin = fields[29],
         parValue = fields[10],
