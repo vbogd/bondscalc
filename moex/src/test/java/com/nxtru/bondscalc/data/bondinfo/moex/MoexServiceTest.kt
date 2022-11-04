@@ -77,10 +77,13 @@ class MoexServiceTest {
 
     @Test
     fun extreactBondInfoTest() {
-        val lines = readLines("/extractTickets/RU000A104ZQ9.csv")
         assertEquals(
             BondInfo(ticker="ВТБ Б1-311", isin="RU000A104ZQ9", parValue="1000", coupon="7.500", maturityDate="27.07.2023"),
-            extreactBondInfo(lines)
+            extreactBondInfo(readLines("/extractTickets/RU000A104ZQ9.csv"))
+        )
+        assertEquals(
+            BondInfo(ticker="ГТЛК 1P-06", isin="RU000A0ZYAP9", parValue="755.55", coupon="9.500", maturityDate="01.09.2032"),
+            extreactBondInfo(readLines("/extractTickets/RU000A0ZYAP9.csv"))
         )
         assertEquals(
             null,
