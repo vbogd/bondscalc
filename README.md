@@ -1,7 +1,16 @@
 # BondsCalc
 
 ## Android
+
+Coroutines
 https://developer.android.com/topic/libraries/architecture/coroutines
+https://developer.android.com/kotlin/coroutines/coroutines-best-practices
+
+ViewMode, Coroutines, Dispatchers.IO, main-safe function
+https://developer.android.com/kotlin/coroutines#executing-in-a-background-thread
+
+layers, Repositories, Data Sources
+https://developer.android.com/topic/architecture
 
 ## MOEX
 

@@ -20,5 +20,5 @@ interface BondInfoRepository {
      *
      * @return null in case of error
      */
-    suspend fun loadBondInfo(isin: String): BondInfo?
+    suspend fun loadBondInfo(secId: String): BondInfo?
 }

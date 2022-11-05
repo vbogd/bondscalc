@@ -17,8 +17,6 @@ import com.nxtru.bondscalc.domain.models.BriefBondInfo
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
-// https://developer.android.com/kotlin/coroutines/coroutines-best-practices
-
 private const val TAG = "MainViewModel"
 
 class MainViewModel(
