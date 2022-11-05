@@ -85,17 +85,12 @@ class MainViewModel(
         )
         val secId = foundTickers.find { it.ticker == ticker }?.secId
         if (secId == null)
-            bondInfo = null
+            onUpdateBondInfo(null)
         else {
             viewModelScope.launch {
                 val bondInfo = loadBondInfoUseCase(secId)
-                this@MainViewModel.bondInfo = bondInfo
-                if (bondInfo != null) {
-                    onBondParamsChange(bondParams.copy(
-                        coupon = bondInfo.coupon,
-                        parValue = bondInfo.parValue,
-                    ))
-                }
+                if (bondInfo == null) showError(R.string.failed_to_load)
+                onUpdateBondInfo(bondInfo)
             }
         }
     }
@@ -110,6 +105,21 @@ class MainViewModel(
     /*
      * Aux functions.
      */
+    private fun onUpdateBondInfo(value: BondInfo?) {
+        bondInfo = value
+        var newBondParams = bondParams.copy(
+            coupon = value?.coupon ?: "",
+            parValue = value?.parValue ?: "",
+        )
+        if (bondParams.tillMaturity) {
+            newBondParams = newBondParams.copy(
+                sellDate = value?.maturityDate ?: "",
+                sellPrice = "100",
+            )
+        }
+        onBondParamsChange(newBondParams)
+    }
+
     private suspend fun showError(msgId: Int) {
         _errorMessageCode.emit(msgId)
     }
