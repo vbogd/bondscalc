@@ -3,7 +3,7 @@ package com.nxtru.bondscalc.presentation
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.nxtru.bondscalc.data.bondinfo.moex.MoexService
+import com.nxtru.bondscalc.data.bondinfo.moex.MoexRepository
 import com.nxtru.bondscalc.data.repository.BondParamsRepositoryImpl
 import com.nxtru.bondscalc.data.storage.SharedPrefsBondParamsStorage
 import com.nxtru.bondscalc.domain.usecase.SaveBondParamsUseCase
@@ -25,7 +25,7 @@ class MainViewModelFactory(context: Context) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        val bondInfoService = MoexService()
+        val bondInfoService = MoexRepository()
         return MainViewModel(
             saveBondParamsUseCase,
             loadBondParamsUseCase,

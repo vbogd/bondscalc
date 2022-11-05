@@ -6,7 +6,7 @@ import com.nxtru.bondscalc.domain.models.BriefBondInfo
 /**
  * Loads information about bonds.
  */
-interface BondInfoService {
+interface BondInfoRepository {
     /**
      * Search bonds.
      * "query" must have length >=3

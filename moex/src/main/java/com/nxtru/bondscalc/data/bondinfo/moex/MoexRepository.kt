@@ -1,6 +1,6 @@
 package com.nxtru.bondscalc.data.bondinfo.moex
 
-import com.nxtru.bondscalc.domain.bondinfo.BondInfoService
+import com.nxtru.bondscalc.domain.bondinfo.BondInfoRepository
 import com.nxtru.bondscalc.domain.models.BondInfo
 import com.nxtru.bondscalc.domain.models.BriefBondInfo
 import io.ktor.client.*
@@ -24,7 +24,7 @@ private object MoexRoutes {
 }
 
 // TODO: use HttpURLConnection? https://developer.android.com/reference/java/net/HttpURLConnection
-class MoexService : BondInfoService {
+class MoexRepository : BondInfoRepository {
     private val client: HttpClient = createHttpClient()
 
     // see http://iss.moex.com/iss/reference/5
