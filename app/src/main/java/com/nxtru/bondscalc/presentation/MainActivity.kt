@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package com.nxtru.bondscalc.presentation
 
 import android.os.Bundle
@@ -25,7 +23,6 @@ import com.nxtru.bondscalc.domain.models.BondParams
 import com.nxtru.bondscalc.presentation.ui.theme.MainTheme
 import com.nxtru.bondscalc.presentation.components.*
 import com.nxtru.bondscalc.presentation.models.MainUIState
-import com.nxtru.bondscalc.presentation.models.SearchScreenUIState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.emptyFlow
@@ -49,12 +46,8 @@ fun MainScreen(viewModel: MainViewModel) {
         onUIStateChange = {
             viewModel.onUIStateChange(uiState.copy(searchScreenUIState = it))
         },
-        onSearch = {
-//            viewModel.onUIStateChange(uiState.copy(searchScreenUIState = uiState.searchScreenUIState.copy(isSearching = true)))
-        },
-        onSelected = {
-
-        },
+        onSearch = viewModel::onSearchScreenSearch,
+        onSelected = {},
     )
 }
 
@@ -73,6 +66,7 @@ fun MainScreenOld(viewModel: MainViewModel) {
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainContent(
     bondParams: BondParams,
@@ -236,6 +230,7 @@ fun ResultRow(label: String, value: String) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NumericField(label: String, value: String, onValueChange: (String) -> Unit) {
     OutlinedTextField(
@@ -250,6 +245,7 @@ fun NumericField(label: String, value: String, onValueChange: (String) -> Unit) 
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MoneyField(label: String, value: String, onValueChange: (String) -> Unit) {
     OutlinedTextField(
@@ -264,6 +260,7 @@ fun MoneyField(label: String, value: String, onValueChange: (String) -> Unit) {
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DateField(label: String, value: String, onValueChange: (String) -> Unit) {
     OutlinedTextField(
