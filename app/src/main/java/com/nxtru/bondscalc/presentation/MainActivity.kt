@@ -3,6 +3,7 @@ package com.nxtru.bondscalc.presentation
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
@@ -16,7 +17,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.nxtru.bondscalc.R
 import com.nxtru.bondscalc.domain.models.BondInfo
 import com.nxtru.bondscalc.domain.models.BondParams
@@ -28,12 +28,18 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.emptyFlow
 
 class MainActivity : ComponentActivity() {
+    private val viewModel: MainViewModel by viewModels {
+        MainViewModelFactory(applicationContext)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         // see https://developer.android.com/reference/kotlin/androidx/compose/foundation/layout/package-summary#(androidx.compose.ui.Modifier).imePadding()
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
         setContent {
-            MainScreen(viewModel(factory = MainViewModelFactory(applicationContext)))
+            MainTheme {
+                MainScreenOld(viewModel)
+            }
         }
     }
 }
@@ -53,7 +59,7 @@ fun MainScreen(viewModel: MainViewModel) {
 
 @Composable
 fun MainScreenOld(viewModel: MainViewModel) {
-    MainContent(
+    MainContentOld(
         bondParams = viewModel.bondParams,
         calcResult = viewModel.calcResult,
         bondInfo = viewModel.bondInfo,
@@ -68,7 +74,7 @@ fun MainScreenOld(viewModel: MainViewModel) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainContent(
+fun MainContentOld(
     bondParams: BondParams,
     calcResult: BondCalcUIResult,
     bondInfo: BondInfo?,
@@ -79,136 +85,134 @@ fun MainContent(
     onTickerSelectionDone: (String) -> Unit,
     onTickerSelectionCancel: () -> Unit = {},
 ) {
-    return MainTheme {
-        // see https://blog.devgenius.io/snackbars-in-jetpack-compose-d1b553224dca
-        // see https://stackoverflow.com/a/73006218
-        val snackbarHostState = remember { SnackbarHostState() }
-        LaunchedEffect(Unit) {
-            errorMessageCode.collectLatest { errCode ->
-                snackbarHostState.showSnackbar(
-                    message = getErrorMessage(errCode),
-                    duration = SnackbarDuration.Short
-                )
-            }
+    // see https://blog.devgenius.io/snackbars-in-jetpack-compose-d1b553224dca
+    // see https://stackoverflow.com/a/73006218
+    val snackbarHostState = remember { SnackbarHostState() }
+    LaunchedEffect(Unit) {
+        errorMessageCode.collectLatest { errCode ->
+            snackbarHostState.showSnackbar(
+                message = getErrorMessage(errCode),
+                duration = SnackbarDuration.Short
+            )
         }
-        Scaffold(
-            snackbarHost = { SnackbarHost(snackbarHostState) },
-            // https://stackoverflow.com/a/72608560
-            modifier = Modifier
+    }
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        // https://stackoverflow.com/a/72608560
+        modifier = Modifier
 //                .fillMaxSize()
 //                .statusBarsPadding()
 //                .navigationBarsPadding()
-                .imePadding()
+            .imePadding()
 //                .verticalScroll(rememberScrollState()),
-        ) { contentPadding ->
-            val padding = 8.dp
-            val rowModifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = padding)
-            Column(
-                modifier = Modifier.padding(contentPadding)
+    ) { contentPadding ->
+        val padding = 8.dp
+        val rowModifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = padding)
+        Column(
+            modifier = Modifier.padding(contentPadding)
+        ) {
+            TickerField(
+                value = tickerSelectionState.ticker,
+                onValueChange = { onBondParamsChange(bondParams.copy(ticker = it)) },
+                modifier = rowModifier,
+                tickers = tickerSelectionState.foundTickers,
+                searching = tickerSelectionState.searching,
+                onSearchTicker = onSearchTicker,
+                onSelectionDone = onTickerSelectionDone,
+                onSelectionCancel = onTickerSelectionCancel
+            )
+            Row(modifier = rowModifier) {
+                Column(Modifier.weight(1f)) {
+                    NumericField(stringResource(R.string.commission), bondParams.commission) {
+                        onBondParamsChange(bondParams.copy(commission = it))
+                    }
+                }
+                Spacer(modifier = Modifier.width(padding))
+                Column(Modifier.weight(1f)) {
+                    NumericField(stringResource(R.string.tax), bondParams.tax) {
+                        onBondParamsChange(bondParams.copy(tax = it))
+                    }
+                }
+            }
+            Row(modifier = rowModifier) {
+                Column(Modifier.weight(1f)) {
+                    MoneyField(stringResource(R.string.par_value), bondParams.parValue) {
+                        onBondParamsChange(bondParams.copy(parValue = it))
+                    }
+                }
+                Spacer(modifier = Modifier.width(padding))
+                Column(Modifier.weight(1f)) {
+                    NumericField(stringResource(R.string.coupon), bondParams.coupon) {
+                        onBondParamsChange(bondParams.copy(coupon = it))
+                    }
+                }
+            }
+            Header(
+                text = stringResource(R.string.buy),
+                modifier = rowModifier,
+            )
+            Row(modifier = rowModifier) {
+                Column(Modifier.weight(1f)) {
+                    DateField(stringResource(R.string.date), bondParams.buyDate) {
+                        onBondParamsChange(bondParams.copy(buyDate = it))
+                    }
+                }
+                Spacer(modifier = Modifier.width(padding))
+                Column(Modifier.weight(1f)) {
+                    NumericField(stringResource(R.string.price), bondParams.buyPrice) {
+                        onBondParamsChange(bondParams.copy(buyPrice = it))
+                    }
+                }
+            }
+            Header(
+                text = stringResource(R.string.sell),
+                modifier = rowModifier
+            )
+            Row(
+                modifier = rowModifier,
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                TickerField(
-                    value = tickerSelectionState.ticker,
-                    onValueChange = { onBondParamsChange(bondParams.copy(ticker = it)) },
-                    modifier = rowModifier,
-                    tickers = tickerSelectionState.foundTickers,
-                    searching = tickerSelectionState.searching,
-                    onSearchTicker = onSearchTicker,
-                    onSelectionDone = onTickerSelectionDone,
-                    onSelectionCancel = onTickerSelectionCancel
+                Text(
+                    color = MaterialTheme.colorScheme.secondary,
+                    text = stringResource(R.string.till_maturity)
                 )
-                Row(modifier = rowModifier) {
-                    Column(Modifier.weight(1f)) {
-                        NumericField(stringResource(R.string.commission), bondParams.commission) {
-                            onBondParamsChange(bondParams.copy(commission = it))
-                        }
-                    }
-                    Spacer(modifier = Modifier.width(padding))
-                    Column(Modifier.weight(1f)) {
-                        NumericField(stringResource(R.string.tax), bondParams.tax) {
-                            onBondParamsChange(bondParams.copy(tax = it))
-                        }
+                Switch(checked = bondParams.tillMaturity, onCheckedChange = {
+                    onBondParamsChange(bondParams.copy(tillMaturity = it))
+                })
+            }
+            Row(modifier = rowModifier) {
+                Column(Modifier.weight(1f)) {
+                    DateField(stringResource(R.string.date), bondParams.sellDate) {
+                        onBondParamsChange(bondParams.copy(sellDate = it))
                     }
                 }
-                Row(modifier = rowModifier) {
-                    Column(Modifier.weight(1f)) {
-                        MoneyField(stringResource(R.string.par_value), bondParams.parValue) {
-                            onBondParamsChange(bondParams.copy(parValue = it))
-                        }
-                    }
-                    Spacer(modifier = Modifier.width(padding))
-                    Column(Modifier.weight(1f)) {
-                        NumericField(stringResource(R.string.coupon), bondParams.coupon) {
-                            onBondParamsChange(bondParams.copy(coupon = it))
-                        }
+                Spacer(modifier = Modifier.width(padding))
+                Column(Modifier.weight(1f)) {
+                    NumericField(stringResource(R.string.price), bondParams.sellPrice) {
+                        onBondParamsChange(bondParams.copy(sellPrice = it))
                     }
                 }
-                Header(
-                    text = stringResource(R.string.buy),
-                    modifier = rowModifier,
-                )
-                Row(modifier = rowModifier) {
-                    Column(Modifier.weight(1f)) {
-                        DateField(stringResource(R.string.date), bondParams.buyDate) {
-                            onBondParamsChange(bondParams.copy(buyDate = it))
-                        }
-                    }
-                    Spacer(modifier = Modifier.width(padding))
-                    Column(Modifier.weight(1f)) {
-                        NumericField(stringResource(R.string.price), bondParams.buyPrice) {
-                            onBondParamsChange(bondParams.copy(buyPrice = it))
-                        }
-                    }
-                }
-                Header(
-                    text = stringResource(R.string.sell),
-                    modifier = rowModifier
-                )
-                Row(
-                    modifier = rowModifier,
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        color = MaterialTheme.colorScheme.secondary,
-                        text = stringResource(R.string.till_maturity)
-                    )
-                    Switch(checked = bondParams.tillMaturity, onCheckedChange = {
-                        onBondParamsChange(bondParams.copy(tillMaturity = it))
-                    })
-                }
-                Row(modifier = rowModifier) {
-                    Column(Modifier.weight(1f)) {
-                        DateField(stringResource(R.string.date), bondParams.sellDate) {
-                            onBondParamsChange(bondParams.copy(sellDate = it))
-                        }
-                    }
-                    Spacer(modifier = Modifier.width(padding))
-                    Column(Modifier.weight(1f)) {
-                        NumericField(stringResource(R.string.price), bondParams.sellPrice) {
-                            onBondParamsChange(bondParams.copy(sellPrice = it))
-                        }
-                    }
-                }
-                Card(
-                    modifier = rowModifier
-                        .padding(vertical = padding),
+            }
+            Card(
+                modifier = rowModifier
+                    .padding(vertical = padding),
 
 //                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+            ) {
+                val paddingModifier = Modifier.padding(padding)
+                Column(
+                    modifier = paddingModifier,
+                    verticalArrangement = Arrangement.spacedBy(padding),
                 ) {
-                    val paddingModifier = Modifier.padding(padding)
-                    Column(
-                        modifier = paddingModifier,
-                        verticalArrangement = Arrangement.spacedBy(padding),
-                    ) {
-                        Header(stringResource(R.string.result))
-                        ResultRow(stringResource(R.string.result_rub), calcResult.income)
-                        ResultRow(stringResource(R.string.result_percent), calcResult.ytm)
-                    }
+                    Header(stringResource(R.string.result))
+                    ResultRow(stringResource(R.string.result_rub), calcResult.income)
+                    ResultRow(stringResource(R.string.result_percent), calcResult.ytm)
                 }
-                Text(text = bondInfo?.toString() ?: "null")
             }
+            Text(text = bondInfo?.toString() ?: "null")
         }
     }
 }
@@ -294,17 +298,19 @@ fun Header(text: String, modifier: Modifier = Modifier) {
 //)
 @Composable
 fun PreviewMessageCard() {
-    MainContent(
-        BondParams.EMPTY,
-        BondCalcUIResult("14.5₽", "9.5%"),
-        bondInfo = null,
-        errorMessageCode = emptyFlow(),
-        onBondParamsChange = {},
-        tickerSelectionState = TickerSelectionUIState("ОФЗ"),
-        onSearchTicker = {},
-        onTickerSelectionDone = {},
-        onTickerSelectionCancel = {}
-    )
+    MainTheme {
+        MainContentOld(
+            BondParams.EMPTY,
+            BondCalcUIResult("14.5₽", "9.5%"),
+            bondInfo = null,
+            errorMessageCode = emptyFlow(),
+            onBondParamsChange = {},
+            tickerSelectionState = TickerSelectionUIState("ОФЗ"),
+            onSearchTicker = {},
+            onTickerSelectionDone = {},
+            onTickerSelectionCancel = {}
+        )
+    }
 }
 
 private fun getErrorMessage(errCode: Int): String {
