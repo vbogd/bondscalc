@@ -14,7 +14,10 @@ import kotlinx.coroutines.launch
 import com.nxtru.bondscalc.R
 import com.nxtru.bondscalc.domain.models.BondInfo
 import com.nxtru.bondscalc.domain.models.BriefBondInfo
+import com.nxtru.bondscalc.presentation.models.MainUIState
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
 private const val TAG = "MainViewModel"
@@ -29,6 +32,9 @@ class MainViewModel(
     /*
      * State.
      */
+    private val _uiStateFlow = MutableStateFlow(MainUIState())
+    val uiStateFlow: StateFlow<MainUIState> = _uiStateFlow
+
     var bondParams by mutableStateOf(BondParams.EMPTY)
         private set
     var calcResult by mutableStateOf(BondCalcUIResult.UNDEFINED)
@@ -47,6 +53,29 @@ class MainViewModel(
     init {
         loadBondParams()
         calculate()
+    }
+
+    fun onUIStateChange(value: MainUIState) {
+//        val prevValue = uiStateFlow.value
+        viewModelScope.launch {
+            _uiStateFlow.emit(value)
+//            if (value.searchScreenUIState.isSearching &&
+//                !prevValue.searchScreenUIState.isSearching) {
+//                println(">>> search tickers: ${value.searchScreenUIState.pattern}")
+//                val foundTickers = searchTickersUseCase(value.searchScreenUIState.pattern)
+//                println(">>> found: $foundTickers")
+//                if (foundTickers != null) {
+//                    _uiStateFlow.emit(uiStateFlow.value.copy(
+//                        searchScreenUIState = uiStateFlow.value.searchScreenUIState.copy(
+//                            tickers = foundTickers,
+//                            isSearching = false
+//                        )
+//                    ))
+//                } else {
+//                    showError(R.string.failed_to_load)
+//                }
+//            }
+        }
     }
 
     fun onBondParamsChange(value: BondParams) {

@@ -9,8 +9,20 @@ https://developer.android.com/kotlin/coroutines/coroutines-best-practices
 ViewMode, Coroutines, Dispatchers.IO, main-safe function
 https://developer.android.com/kotlin/coroutines#executing-in-a-background-thread
 
+MutableStateFlow in ViewModel, saving state, testing
+https://proandroiddev.com/viewmodels-using-compose-mutablestateflows-or-mutablestates-64d34ba548c5
+
+collectAsStateWithLifecycle, alpha version now
+https://medium.com/androiddevelopers/consuming-flows-safely-in-jetpack-compose-cde014d0d5a3
+
 layers, Repositories, Data Sources
 https://developer.android.com/topic/architecture
+
+Material 3 colors
+https://m3.material.io/styles/color/the-color-system/key-colors-tones
+
+Material3 sample app
+https://github.com/android/compose-samples/tree/main/Reply
 
 ## MOEX
 

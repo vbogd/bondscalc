@@ -23,7 +23,9 @@ import com.nxtru.bondscalc.R
 import com.nxtru.bondscalc.domain.models.BondInfo
 import com.nxtru.bondscalc.domain.models.BondParams
 import com.nxtru.bondscalc.presentation.ui.theme.MainTheme
-import com.nxtru.bondscalc.presentation.widgets.*
+import com.nxtru.bondscalc.presentation.components.*
+import com.nxtru.bondscalc.presentation.models.MainUIState
+import com.nxtru.bondscalc.presentation.models.SearchScreenUIState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.emptyFlow
@@ -41,6 +43,23 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainScreen(viewModel: MainViewModel) {
+    val uiState: MainUIState by viewModel.uiStateFlow.collectAsState()
+    SearchScreen(
+        uiState = uiState.searchScreenUIState,
+        onUIStateChange = {
+            viewModel.onUIStateChange(uiState.copy(searchScreenUIState = it))
+        },
+        onSearch = {
+//            viewModel.onUIStateChange(uiState.copy(searchScreenUIState = uiState.searchScreenUIState.copy(isSearching = true)))
+        },
+        onSelected = {
+
+        },
+    )
+}
+
+@Composable
+fun MainScreenOld(viewModel: MainViewModel) {
     MainContent(
         bondParams = viewModel.bondParams,
         calcResult = viewModel.calcResult,
@@ -89,7 +108,9 @@ fun MainContent(
 //                .verticalScroll(rememberScrollState()),
         ) { contentPadding ->
             val padding = 8.dp
-            val rowModifier = Modifier.fillMaxWidth().padding(horizontal = padding)
+            val rowModifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = padding)
             Column(
                 modifier = Modifier.padding(contentPadding)
             ) {
@@ -266,7 +287,9 @@ fun Header(text: String, modifier: Modifier = Modifier) {
     )
 }
 
-@Preview(name = "Light Mode")
+@Preview(
+    name = "Light Mode"
+)
 //@Preview(
 //    uiMode = Configuration.UI_MODE_NIGHT_YES,
 //    showBackground = true,

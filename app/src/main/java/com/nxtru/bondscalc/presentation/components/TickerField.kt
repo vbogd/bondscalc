@@ -1,4 +1,4 @@
-package com.nxtru.bondscalc.presentation.widgets
+package com.nxtru.bondscalc.presentation.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -78,7 +78,7 @@ fun TickerField(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun PreviewTickerField() {
     var ticker by remember { mutableStateOf("ОФЗ") }
