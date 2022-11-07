@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import com.nxtru.bondscalc.R
 import com.nxtru.bondscalc.domain.models.BondInfo
 import com.nxtru.bondscalc.domain.models.BriefBondInfo
-import com.nxtru.bondscalc.presentation.models.MainUIState
+import com.nxtru.bondscalc.presentation.models.*
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -56,25 +56,26 @@ class MainViewModel(
     }
 
     fun onUIStateChange(value: MainUIState) {
-//        val prevValue = uiStateFlow.value
         viewModelScope.launch {
             _uiStateFlow.emit(value)
-//            if (value.searchScreenUIState.isSearching &&
-//                !prevValue.searchScreenUIState.isSearching) {
-//                println(">>> search tickers: ${value.searchScreenUIState.pattern}")
-//                val foundTickers = searchTickersUseCase(value.searchScreenUIState.pattern)
-//                println(">>> found: $foundTickers")
-//                if (foundTickers != null) {
-//                    _uiStateFlow.emit(uiStateFlow.value.copy(
-//                        searchScreenUIState = uiStateFlow.value.searchScreenUIState.copy(
-//                            tickers = foundTickers,
-//                            isSearching = false
-//                        )
-//                    ))
-//                } else {
-//                    showError(R.string.failed_to_load)
-//                }
-//            }
+        }
+    }
+
+    fun onSearchScreenSearch(pattern: String) {
+        viewModelScope.launch {
+            updateSearchScreenUIState {
+                copy(isSearching = true)
+            }
+            val foundTickers = searchTickersUseCase(pattern)
+            if (foundTickers == null) {
+                showError(R.string.failed_to_load)
+            }
+            updateSearchScreenUIState {
+                copy(
+                    tickers = foundTickers ?: emptyList(),
+                    isSearching = false
+                )
+            }
         }
     }
 
@@ -132,6 +133,23 @@ class MainViewModel(
     /*
      * Aux functions.
      */
+    private suspend fun updateUIState(value: MainUIState) {
+        _uiStateFlow.emit(value)
+    }
+
+    private suspend fun updateUIState(modifier: MainUIState.() -> MainUIState) {
+        updateUIState(modifier.invoke(uiStateFlow.value))
+    }
+
+    private suspend fun updateSearchScreenUIState(
+        modifier: SearchScreenUIState.() -> SearchScreenUIState
+    ) {
+        updateUIState {
+            val newState = modifier.invoke(searchScreenUIState)
+            copy(searchScreenUIState = newState)
+        }
+    }
+
     private fun onUpdateBondInfo(value: BondInfo?) {
         bondInfo = value
         var newBondParams = bondParams.copy(

@@ -17,8 +17,6 @@ import androidx.compose.ui.unit.dp
 import com.nxtru.bondscalc.R
 import com.nxtru.bondscalc.domain.models.BriefBondInfo
 import com.nxtru.bondscalc.presentation.models.SearchScreenUIState
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 
 private val padding = 8.dp
 
@@ -128,26 +126,18 @@ private val initial = SearchScreenUIState(
         BriefBondInfo("SU29014RMFS6", "ОФЗ 29014", "RU000A101N52"),
     )
 )
-private val uiStateFlow = MutableStateFlow(initial)
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewSearchScreen() {
-    val uiState: SearchScreenUIState by uiStateFlow.collectAsState()
-//    var uiState by remember { mutableStateOf(initial) }
-    val coroutineScope = rememberCoroutineScope()
+    var uiState by remember { mutableStateOf(initial) }
     SearchScreen(
         uiState = uiState,
         modifier = Modifier.fillMaxSize(),
         onUIStateChange = {
-            coroutineScope.launch {
-                uiStateFlow.emit(it)
-            }
-//              uiState = it
+              uiState = it
         },
-//        onSearch = { uiState = uiState.copy(tickers = initial.tickers) },
-        onSearch = {},
-//        onSelected = { uiState = uiState.copy(pattern = it.secId, tickers = emptyList()) },
-        onSelected = {}
+        onSearch = { uiState = uiState.copy(tickers = initial.tickers) },
+        onSelected = { uiState = uiState.copy(pattern = it.secId, tickers = emptyList()) },
     )
 }
