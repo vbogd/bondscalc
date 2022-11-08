@@ -17,4 +17,6 @@
     <string name="loading">Загрузка...</string>
     <string name="not_found">Не найдено</string>
     <string name="failed_to_load">Ошибка загрузки</string>
+    <string name="calculator_screen">Калькулятор</string>
+    <string name="search_screen">Поиск</string>
 </resources>
