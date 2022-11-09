@@ -73,7 +73,8 @@ private fun TickerField(
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        label = { Text(stringResource(R.string.ticker)) },
+        label = { Text(stringResource(R.string.search_field_label)) },
+        placeholder = { Text(stringResource(R.string.search_field_placeholder)) },
         singleLine = true,
         trailingIcon = {
             Icon(

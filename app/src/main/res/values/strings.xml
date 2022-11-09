@@ -19,4 +19,6 @@
     <string name="failed_to_load">Ошибка загрузки</string>
     <string name="calculator_screen">Калькулятор</string>
     <string name="search_screen">Поиск</string>
+    <string name="search_field_label">поиск</string>
+    <string name="search_field_placeholder">Тикер или ISIN</string>
 </resources>
