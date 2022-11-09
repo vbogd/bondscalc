@@ -22,8 +22,12 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.nxtru.bondscalc.R
 
+object NavArgument {
+    const val secId = "secId"
+}
+
 sealed class Screen(val route: String, @StringRes val resourceId: Int) {
-    object Calculator : Screen("calculator", R.string.calculator_screen)
+    object Calculator : Screen("calculator?secId={secId}", R.string.calculator_screen)
     object Search : Screen("search", R.string.search_screen)
 }
 
@@ -31,6 +35,9 @@ val screens = listOf(
     Screen.Calculator,
     Screen.Search,
 )
+
+// TODO: use Screen.Calculator.route
+fun getCalculatorRoute(secId: String) = "calculator?secId=$secId"
 
 @Composable
 fun BottomBar(
@@ -66,13 +73,13 @@ fun BottomBar(
                         // avoid building up a large stack of destinations
                         // on the back stack as users select items
                         popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
+//                            saveState = true
                         }
                         // Avoid multiple copies of the same destination when
                         // reselecting the same item
                         launchSingleTop = true
                         // Restore state when reselecting a previously selected item
-                        restoreState = true
+//                        restoreState = true
                     }
                 }
             )

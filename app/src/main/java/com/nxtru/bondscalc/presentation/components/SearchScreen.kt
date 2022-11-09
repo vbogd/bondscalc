@@ -98,6 +98,7 @@ private fun BriefBondInfoCard(
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            // to remove ripple effect: https://stackoverflow.com/a/66703449
             .clickable(onClick = onClick)
     ) {
         val modifier = Modifier.padding(start = padding)

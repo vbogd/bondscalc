@@ -12,6 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.nxtru.bondscalc.R
 import com.nxtru.bondscalc.domain.models.BondInfo
 import com.nxtru.bondscalc.domain.models.BondParams
@@ -103,7 +104,13 @@ fun MainContent(
             startDestination = Screen.Calculator.route,
             modifier = Modifier.padding(contentPadding),
         ) {
-            composable(Screen.Calculator.route) {
+            composable(
+                Screen.Calculator.route,
+                arguments = listOf(navArgument(NavArgument.secId) { defaultValue = "" })
+            ) { backStackEntry ->
+                val secId = backStackEntry.arguments?.getString(NavArgument.secId)
+                // TODO: use correctly
+                println(">>> secId: '$secId'")
                 CalculatorScreen(
                     modifier = Modifier.fillMaxWidth(),
                     bondParams = bondParams,
@@ -124,8 +131,7 @@ fun MainContent(
                     },
                     onSearch = onSearchScreenSearch,
                     onSelected = {
-                        // TODO: implement
-                        println(">>> selected: $it")
+                        navController.navigate(getCalculatorRoute(it.secId))
                     },
                 )
             }
