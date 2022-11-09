@@ -22,8 +22,8 @@ private val padding = 8.dp
 
 @Composable
 fun SearchScreen(
-    uiState: SearchScreenUIState,
     modifier: Modifier = Modifier,
+    uiState: SearchScreenUIState,
     onUIStateChange: (SearchScreenUIState) -> Unit,
     onSearch: (String) -> Unit,
     onSelected: (BriefBondInfo) -> Unit,

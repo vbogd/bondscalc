@@ -9,7 +9,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -35,28 +34,19 @@ class MainActivity : ComponentActivity() {
         setContent {
             MainTheme {
                 MainScreenOld(viewModel)
-//                MyAppNavHost(modifier = Modifier.fillMaxSize())
             }
         }
     }
 }
 
 @Composable
-fun MainScreen(viewModel: MainViewModel) {
-    val uiState: MainUIState by viewModel.uiStateFlow.collectAsState()
-    SearchScreen(
-        uiState = uiState.searchScreenUIState,
-        onUIStateChange = {
-            viewModel.onUIStateChange(uiState.copy(searchScreenUIState = it))
-        },
-        onSearch = viewModel::onSearchScreenSearch,
-        onSelected = {},
-    )
-}
-
-@Composable
 fun MainScreenOld(viewModel: MainViewModel) {
-    MainContentOld(
+    val uiState: MainUIState by viewModel.uiStateFlow.collectAsState()
+
+    MainContent(
+        uiState = uiState,
+        onUIStateChange = viewModel::onUIStateChange,
+        onSearchScreenSearch = viewModel::onSearchScreenSearch,
         bondParams = viewModel.bondParams,
         calcResult = viewModel.calcResult,
         bondInfo = viewModel.bondInfo,
@@ -71,7 +61,10 @@ fun MainScreenOld(viewModel: MainViewModel) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainContentOld(
+fun MainContent(
+    uiState: MainUIState,
+    onUIStateChange: (MainUIState) -> Unit,
+    onSearchScreenSearch: (String) -> Unit,
     bondParams: BondParams,
     calcResult: BondCalcUIResult,
     bondInfo: BondInfo?,
@@ -85,6 +78,7 @@ fun MainContentOld(
     // see https://blog.devgenius.io/snackbars-in-jetpack-compose-d1b553224dca
     // see https://stackoverflow.com/a/73006218
     val snackbarHostState = remember { SnackbarHostState() }
+    val navController = rememberNavController()
     LaunchedEffect(Unit) {
         errorMessageCode.collectLatest { errCode ->
             snackbarHostState.showSnackbar(
@@ -97,23 +91,45 @@ fun MainContentOld(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         // https://stackoverflow.com/a/72608560
         modifier = Modifier
-//                .fillMaxSize()
+            .fillMaxSize(),
 //                .statusBarsPadding()
-//                .navigationBarsPadding()
-            .imePadding()
+//            .navigationBarsPadding()
+//            .imePadding(),
 //                .verticalScroll(rememberScrollState()),
+        bottomBar = { BottomBar(navController) },
     ) { contentPadding ->
-        CalculatorScreen(
+        NavHost(
+            navController = navController,
+            startDestination = Screen.Calculator.route,
             modifier = Modifier.padding(contentPadding),
-            bondParams = bondParams,
-            calcResult = calcResult,
-            bondInfo = bondInfo,
-            tickerSelectionState = tickerSelectionState,
-            onBondParamsChange = onBondParamsChange,
-            onSearchTicker = onSearchTicker,
-            onTickerSelectionDone = onTickerSelectionDone,
-            onTickerSelectionCancel = onTickerSelectionCancel,
-        )
+        ) {
+            composable(Screen.Calculator.route) {
+                CalculatorScreen(
+                    modifier = Modifier.fillMaxWidth(),
+                    bondParams = bondParams,
+                    calcResult = calcResult,
+                    bondInfo = bondInfo,
+                    tickerSelectionState = tickerSelectionState,
+                    onBondParamsChange = onBondParamsChange,
+                    onSearchTicker = onSearchTicker,
+                    onTickerSelectionDone = onTickerSelectionDone,
+                    onTickerSelectionCancel = onTickerSelectionCancel,
+                )
+            }
+            composable(Screen.Search.route) {
+                SearchScreen(
+                    uiState = uiState.searchScreenUIState,
+                    onUIStateChange = {
+                        onUIStateChange(uiState.copy(searchScreenUIState = it))
+                    },
+                    onSearch = onSearchScreenSearch,
+                    onSelected = {
+                        // TODO: implement
+                        println(">>> selected: $it")
+                    },
+                )
+            }
+        }
     }
 }
 
@@ -127,13 +143,14 @@ fun MainContentOld(
 //)
 @Composable
 fun PreviewMessageCard() {
+    var uiState by remember { mutableStateOf(MainUIState()) }
     MainTheme {
-//        MyAppNavHost(
-//            modifier = Modifier.fillMaxSize()
-//        )
-        MainContentOld(
-            BondParams.EMPTY,
-            BondCalcUIResult("14.5₽", "9.5%"),
+        MainContent(
+            uiState = uiState,
+            onUIStateChange = { uiState = it},
+            onSearchScreenSearch = {},
+            bondParams = BondParams.EMPTY,
+            calcResult = BondCalcUIResult("14.5₽", "9.5%"),
             bondInfo = null,
             errorMessageCode = emptyFlow(),
             onBondParamsChange = {},
