@@ -2,8 +2,10 @@ package com.nxtru.bondscalc.presentation.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
@@ -42,6 +44,7 @@ fun SearchScreen(
                 onUIStateChange(uiState.copy(pattern = "", tickers = emptyList()))
             }
         )
+        Spacer(Modifier.height(padding))
         if (uiState.isSearching) {
             Box(
                 contentAlignment = Alignment.Center,
@@ -51,7 +54,9 @@ fun SearchScreen(
             }
         } else if (uiState.tickers.isNotEmpty()) {
             Column(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
             ) {
                 uiState.tickers.map {
                     BriefBondInfoCard(info = it, onClick = { onSelected(it) })
