@@ -51,12 +51,9 @@ fun MainScreenOld(viewModel: MainViewModel) {
         bondParams = viewModel.bondParams,
         calcResult = viewModel.calcResult,
         bondInfo = viewModel.bondInfo,
-        tickerSelectionState = viewModel.tickerSelectionState,
         errorMessageCode = viewModel.errorMessageCode,
         onBondParamsChange = viewModel::onBondParamsChange,
-        onSearchTicker = viewModel::onSearchTicker,
         onTickerSelectionDone = viewModel::onTickerSelectionDone,
-        onTickerSelectionCancel = viewModel::onTickerSelectionCancel,
     )
 }
 
@@ -69,12 +66,9 @@ fun MainContent(
     bondParams: BondParams,
     calcResult: BondCalcUIResult,
     bondInfo: BondInfo?,
-    tickerSelectionState: TickerSelectionUIState,
     errorMessageCode: Flow<Int>,
     onBondParamsChange: (BondParams) -> Unit,
-    onSearchTicker: (String) -> Unit,
     onTickerSelectionDone: (String) -> Unit,
-    onTickerSelectionCancel: () -> Unit = {},
 ) {
     // see https://blog.devgenius.io/snackbars-in-jetpack-compose-d1b553224dca
     // see https://stackoverflow.com/a/73006218
@@ -108,19 +102,14 @@ fun MainContent(
                 Screen.Calculator.route,
                 arguments = listOf(navArgument(NavArgument.secId) { defaultValue = "" })
             ) { backStackEntry ->
-                val secId = backStackEntry.arguments?.getString(NavArgument.secId)
-                // TODO: use correctly
-                println(">>> secId: '$secId'")
+                val secId = backStackEntry.arguments?.getString(NavArgument.secId) ?: ""
+                if (secId.isNotEmpty()) onTickerSelectionDone(secId)
                 CalculatorScreen(
                     modifier = Modifier.fillMaxWidth(),
                     bondParams = bondParams,
                     calcResult = calcResult,
                     bondInfo = bondInfo,
-                    tickerSelectionState = tickerSelectionState,
                     onBondParamsChange = onBondParamsChange,
-                    onSearchTicker = onSearchTicker,
-                    onTickerSelectionDone = onTickerSelectionDone,
-                    onTickerSelectionCancel = onTickerSelectionCancel,
                 )
             }
             composable(Screen.Search.route) {
@@ -160,10 +149,7 @@ fun PreviewMessageCard() {
             bondInfo = null,
             errorMessageCode = emptyFlow(),
             onBondParamsChange = {},
-            tickerSelectionState = TickerSelectionUIState("ОФЗ"),
-            onSearchTicker = {},
             onTickerSelectionDone = {},
-            onTickerSelectionCancel = {}
         )
     }
 }

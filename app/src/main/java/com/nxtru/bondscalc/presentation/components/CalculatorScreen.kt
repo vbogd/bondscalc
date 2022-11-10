@@ -22,11 +22,7 @@ fun CalculatorScreen(
     bondParams: BondParams,
     calcResult: BondCalcUIResult,
     bondInfo: BondInfo?,
-    tickerSelectionState: TickerSelectionUIState,
     onBondParamsChange: (BondParams) -> Unit,
-    onSearchTicker: (String) -> Unit,
-    onTickerSelectionDone: (String) -> Unit,
-    onTickerSelectionCancel: () -> Unit = {},
 ) {
     val padding = 8.dp
     val rowModifier = Modifier
@@ -36,14 +32,8 @@ fun CalculatorScreen(
         modifier = modifier
     ) {
         TickerField(
-            value = tickerSelectionState.ticker,
+            value = bondParams.ticker,
             onValueChange = { onBondParamsChange(bondParams.copy(ticker = it)) },
-            modifier = rowModifier,
-            tickers = tickerSelectionState.foundTickers,
-            searching = tickerSelectionState.searching,
-            onSearchTicker = onSearchTicker,
-            onSelectionDone = onTickerSelectionDone,
-            onSelectionCancel = onTickerSelectionCancel
         )
         Row(modifier = rowModifier) {
             Column(Modifier.weight(1f)) {
@@ -138,7 +128,6 @@ fun CalculatorScreen(
     }
 }
 
-
 @Composable
 fun ResultRow(label: String, value: String) {
     Row(
@@ -154,6 +143,18 @@ fun ResultRow(label: String, value: String) {
             fontWeight = FontWeight.Bold
         )
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TickerField(value: String, onValueChange: (String) -> Unit) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(stringResource(R.string.ticker)) },
+        singleLine = true,
+        modifier = Modifier.fillMaxWidth()
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

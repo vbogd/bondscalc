@@ -13,7 +13,6 @@ import com.nxtru.bondscalc.domain.usecase.bondinfo.*
 import kotlinx.coroutines.launch
 import com.nxtru.bondscalc.R
 import com.nxtru.bondscalc.domain.models.BondInfo
-import com.nxtru.bondscalc.domain.models.BriefBondInfo
 import com.nxtru.bondscalc.presentation.models.*
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,12 +40,9 @@ class MainViewModel(
         private set
     var bondInfo by mutableStateOf<BondInfo?>(null)
         private set
-    var tickerSelectionState by mutableStateOf(TickerSelectionUIState(""))
-        private set
     // see https://blog.devgenius.io/snackbars-in-jetpack-compose-d1b553224dca
     private val _errorMessageCode = MutableSharedFlow<Int>()
     val errorMessageCode = _errorMessageCode.asSharedFlow()
-    private var foundTickers: List<BriefBondInfo> = emptyList()
 
     private val bondCalcUseCase = BondCalcUseCase()
 
@@ -81,53 +77,18 @@ class MainViewModel(
 
     fun onBondParamsChange(value: BondParams) {
         bondParams = value
-        updateTickerSelectionTicker()
         saveBondParams()
         calculate()
     }
 
-    /*
-     * Ticker selection callbacks.
-     */
-    fun onSearchTicker(ticker: String) {
+    fun onTickerSelectionDone(secId: String) {
+        if (bondInfo?.secId == secId) return
         viewModelScope.launch {
-            tickerSelectionState = tickerSelectionState.copy(searching = true)
-            val foundTickers = searchTickersUseCase(ticker)
-            tickerSelectionState = tickerSelectionState.copy(
-                foundTickers = foundTickers?.map(BriefBondInfo::ticker),
-                searching = false,
-            )
-            this@MainViewModel.foundTickers = foundTickers ?: emptyList()
-            if (foundTickers == null) {
-                showError(R.string.failed_to_load)
-            }
+            // TODO: show loading indicator
+            val bondInfo = loadBondInfoUseCase(secId)
+            if (bondInfo == null) showError(R.string.failed_to_load)
+            onUpdateBondInfo(bondInfo)
         }
-    }
-
-    fun onTickerSelectionDone(ticker: String) {
-        onBondParamsChange(
-            bondParams.copy(ticker = ticker)
-        )
-        tickerSelectionState = tickerSelectionState.copy(
-            foundTickers = null,
-        )
-        val secId = foundTickers.find { it.ticker == ticker }?.secId
-        if (secId == null)
-            onUpdateBondInfo(null)
-        else {
-            viewModelScope.launch {
-                val bondInfo = loadBondInfoUseCase(secId)
-                if (bondInfo == null) showError(R.string.failed_to_load)
-                onUpdateBondInfo(bondInfo)
-            }
-        }
-    }
-
-    fun onTickerSelectionCancel() {
-        tickerSelectionState = tickerSelectionState.copy(
-            foundTickers = null,
-            searching = false,
-        )
     }
 
     /*
@@ -153,15 +114,16 @@ class MainViewModel(
     private fun onUpdateBondInfo(value: BondInfo?) {
         bondInfo = value
         var newBondParams = bondParams.copy(
+            ticker = value?.ticker ?: "",
             coupon = value?.coupon ?: "",
             parValue = value?.parValue ?: "",
         )
-        if (bondParams.tillMaturity) {
+//        if (bondParams.tillMaturity) {
             newBondParams = newBondParams.copy(
                 sellDate = value?.maturityDate ?: "",
                 sellPrice = "100",
             )
-        }
+//        }
         onBondParamsChange(newBondParams)
     }
 
@@ -175,12 +137,6 @@ class MainViewModel(
 
     private fun loadBondParams() {
         bondParams = loadBondParamsUseCase.execute()
-        updateTickerSelectionTicker()
-    }
-
-    private fun updateTickerSelectionTicker() {
-        if (tickerSelectionState.ticker != bondParams.ticker)
-            tickerSelectionState = tickerSelectionState.copy(ticker = bondParams.ticker)
     }
 
     private fun calculate() {
@@ -209,9 +165,3 @@ data class BondCalcUIResult(
         val UNDEFINED = BondCalcUIResult("", "")
     }
 }
-
-data class TickerSelectionUIState(
-    val ticker: String,
-    val searching: Boolean = false,
-    val foundTickers: List<String>? = null,
-)
