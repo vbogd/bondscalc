@@ -18,6 +18,7 @@ import com.nxtru.bondscalc.domain.models.BondInfo
 import com.nxtru.bondscalc.domain.models.BondParams
 import com.nxtru.bondscalc.presentation.ui.theme.MainTheme
 import com.nxtru.bondscalc.presentation.components.*
+import com.nxtru.bondscalc.presentation.models.CalculatorScreenUIState
 import com.nxtru.bondscalc.presentation.models.MainUIState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
@@ -105,11 +106,12 @@ fun MainContent(
                 val secId = backStackEntry.arguments?.getString(NavArgument.secId) ?: ""
                 if (secId.isNotEmpty()) onTickerSelectionDone(secId)
                 CalculatorScreen(
+                    uiState = CalculatorScreenUIState(bondParams, calcResult, bondInfo),
+                    onUIStateChange = {
+                        onBondParamsChange(it.bondParams)
+                        onUIStateChange(uiState.copy(calculatorScreenUIState = it))
+                    },
                     modifier = Modifier.fillMaxWidth(),
-                    bondParams = bondParams,
-                    calcResult = calcResult,
-                    bondInfo = bondInfo,
-                    onBondParamsChange = onBondParamsChange,
                 )
             }
             composable(Screen.Search.route) {

@@ -24,9 +24,9 @@ private val padding = 8.dp
 
 @Composable
 fun SearchScreen(
-    modifier: Modifier = Modifier,
     uiState: SearchScreenUIState,
     onUIStateChange: (SearchScreenUIState) -> Unit,
+    modifier: Modifier = Modifier,
     onSearch: (String) -> Unit,
     onSelected: (BriefBondInfo) -> Unit,
 ) {
@@ -82,11 +82,13 @@ private fun TickerField(
         placeholder = { Text(stringResource(R.string.search_field_placeholder)) },
         singleLine = true,
         trailingIcon = {
-            Icon(
-                imageVector = Icons.Filled.Close,
-                contentDescription = null,
-                modifier = Modifier.clickable(onClick = onClear)
-            )
+            if (value.isNotEmpty()) {
+                Icon(
+                    imageVector = Icons.Filled.Close,
+                    contentDescription = null,
+                    modifier = Modifier.clickable(onClick = onClear)
+                )
+            }
         },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
         keyboardActions = KeyboardActions(
