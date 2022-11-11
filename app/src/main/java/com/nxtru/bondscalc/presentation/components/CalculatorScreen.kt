@@ -15,9 +15,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nxtru.bondscalc.R
+import com.nxtru.bondscalc.domain.models.BondParams
 import com.nxtru.bondscalc.presentation.*
 import com.nxtru.bondscalc.presentation.models.CalculatorScreenUIState
-import com.nxtru.bondscalc.presentation.models.bondParams
+import java.text.SimpleDateFormat
+import java.util.*
 
 @Composable
 fun CalculatorScreen(
@@ -25,6 +27,9 @@ fun CalculatorScreen(
     onUIStateChange: (CalculatorScreenUIState) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val onBondParamsChange = { it: BondParams ->
+        onUIStateChange(uiState.copy(bondParams = it))
+    }
     val padding = 8.dp
     val rowModifier = Modifier
         .fillMaxWidth()
@@ -35,32 +40,32 @@ fun CalculatorScreen(
         val bondParams = uiState.bondParams
         TickerField(
             value = bondParams.ticker,
-            onValueChange = { onUIStateChange(uiState.bondParams(bondParams.copy(ticker = it))) },
+            onValueChange = { onBondParamsChange(bondParams.copy(ticker = it)) },
             modifier = rowModifier,
         )
         Row(modifier = rowModifier) {
             Column(Modifier.weight(1f)) {
                 NumericField(stringResource(R.string.commission), bondParams.commission) {
-                    onUIStateChange(uiState.bondParams(bondParams.copy(commission = it)))
+                    onBondParamsChange(bondParams.copy(commission = it))
                 }
             }
             Spacer(modifier = Modifier.width(padding))
             Column(Modifier.weight(1f)) {
                 NumericField(stringResource(R.string.tax), bondParams.tax) {
-                    onUIStateChange(uiState.bondParams(bondParams.copy(tax = it)))
+                    onBondParamsChange(bondParams.copy(tax = it))
                 }
             }
         }
         Row(modifier = rowModifier) {
             Column(Modifier.weight(1f)) {
                 MoneyField(stringResource(R.string.par_value), bondParams.parValue) {
-                    onUIStateChange(uiState.bondParams(bondParams.copy(parValue = it)))
+                    onBondParamsChange(bondParams.copy(parValue = it))
                 }
             }
             Spacer(modifier = Modifier.width(padding))
             Column(Modifier.weight(1f)) {
                 NumericField(stringResource(R.string.coupon), bondParams.coupon) {
-                    onUIStateChange(uiState.bondParams(bondParams.copy(coupon = it)))
+                    onBondParamsChange(bondParams.copy(coupon = it))
                 }
             }
         }
@@ -70,14 +75,21 @@ fun CalculatorScreen(
         )
         Row(modifier = rowModifier) {
             Column(Modifier.weight(1f)) {
-                DateField(stringResource(R.string.date), bondParams.buyDate) {
-                    onUIStateChange(uiState.bondParams(bondParams.copy(buyDate = it)))
-                }
+                DateField(
+                    label = stringResource(R.string.date),
+                    value = bondParams.buyDate,
+                    onValueChange = {
+                        onBondParamsChange(bondParams.copy(buyDate = it))
+                    },
+                    onToday = {
+                        onBondParamsChange(bondParams.copy(buyDate = getTodayDate()))
+                    }
+                )
             }
             Spacer(modifier = Modifier.width(padding))
             Column(Modifier.weight(1f)) {
                 NumericField(stringResource(R.string.price), bondParams.buyPrice) {
-                    onUIStateChange(uiState.bondParams(bondParams.copy(buyPrice = it)))
+                    onBondParamsChange(bondParams.copy(buyPrice = it))
                 }
             }
         }
@@ -95,19 +107,27 @@ fun CalculatorScreen(
                 text = stringResource(R.string.till_maturity)
             )
             Switch(checked = bondParams.tillMaturity, onCheckedChange = {
-                onUIStateChange(uiState.bondParams(bondParams.copy(tillMaturity = it)))
+                onBondParamsChange(bondParams.copy(tillMaturity = it))
             })
         }
+
         Row(modifier = rowModifier) {
             Column(Modifier.weight(1f)) {
-                DateField(stringResource(R.string.date), bondParams.sellDate) {
-                    onUIStateChange(uiState.bondParams(bondParams.copy(sellDate = it)))
-                }
+                DateField(
+                    label = stringResource(R.string.date),
+                    value = bondParams.sellDate,
+                    onValueChange = {
+                        onBondParamsChange(bondParams.copy(sellDate = it))
+                    },
+                    onToday = {
+                        onBondParamsChange(bondParams.copy(sellDate = getTodayDate()))
+                    }
+                )
             }
             Spacer(modifier = Modifier.width(padding))
             Column(Modifier.weight(1f)) {
                 NumericField(stringResource(R.string.price), bondParams.sellPrice) {
-                    onUIStateChange(uiState.bondParams(bondParams.copy(sellPrice = it)))
+                    onBondParamsChange(bondParams.copy(sellPrice = it))
                 }
             }
         }
@@ -201,20 +221,20 @@ fun DateField(
     label: String,
     value: String,
     onValueChange: (String) -> Unit,
-//    onToday: () -> Unit,
+    onToday: () -> Unit,
 ) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         modifier = Modifier.fillMaxWidth(),
         label = { Text(label) },
-//        trailingIcon = {
-//            Icon(
-//                painterResource(R.drawable.ic_outline_today_24),
-//                null,
-//                modifier = Modifier.clickable(onClick = onToday)
-//            )
-//        },
+        trailingIcon = {
+            Icon(
+                painterResource(R.drawable.ic_outline_today_24),
+                null,
+                modifier = Modifier.clickable(onClick = onToday)
+            )
+        },
         singleLine = true,
         placeholder = { Text("DD.MM.YYYY") },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
@@ -229,6 +249,12 @@ fun Header(text: String, modifier: Modifier = Modifier) {
         color = MaterialTheme.colorScheme.secondary,
         style = MaterialTheme.typography.titleLarge
     )
+}
+
+private val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.US)
+
+internal fun getTodayDate(): String {
+    return dateFormat.format(Date())
 }
 
 @Preview(showBackground = true)

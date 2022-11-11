@@ -9,6 +9,3 @@ data class CalculatorScreenUIState(
     val calcResult: BondCalcUIResult = BondCalcUIResult.UNDEFINED,
     val bondInfo: BondInfo? = null,
 )
-
-fun CalculatorScreenUIState.bondParams(value: BondParams): CalculatorScreenUIState =
-    this.copy(bondParams = value)
