@@ -36,7 +36,7 @@ fun SearchScreen(
         TickerField(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = padding),
+                .padding(all = padding),
             value = uiState.pattern,
             onSearch = onSearch,
             onValueChange = { onUIStateChange(uiState.copy(pattern = it)) },
@@ -46,10 +46,7 @@ fun SearchScreen(
         )
         Spacer(Modifier.height(padding))
         if (uiState.isSearching) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.fillMaxSize()
-            ) {
+            AlignCenterBox {
                 CircularProgressIndicator()
             }
         } else if (uiState.tickers.isNotEmpty()) {
@@ -62,8 +59,27 @@ fun SearchScreen(
                     BriefBondInfoCard(info = it, onClick = { onSelected(it) })
                 }
             }
+        } else {
+            AlignCenterBox {
+                Text(
+                    modifier = Modifier.padding(padding),
+                    text = stringResource(R.string.not_found),
+                    color = LocalContentColor.current.copy(alpha = 0.5f)
+                )
+            }
         }
     }
+}
+
+@Composable
+private fun AlignCenterBox(
+    content: @Composable BoxScope.() -> Unit
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxSize(),
+        content = content,
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -78,7 +94,7 @@ private fun TickerField(
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        label = { Text(stringResource(R.string.search_field_label)) },
+//        label = { Text(stringResource(R.string.search_field_label)) },
         placeholder = { Text(stringResource(R.string.search_field_placeholder)) },
         singleLine = true,
         trailingIcon = {
@@ -127,8 +143,9 @@ private fun BriefBondInfoCard(
 }
 
 private val initial = SearchScreenUIState(
-    pattern = "26009",
+    pattern = "ОФЗ",
     isSearching = false,
+//    tickers = emptyList(),
     tickers = listOf(
         BriefBondInfo("SU26229RMFS3", "ОФЗ 26229", "RU000A100EG3"),
         BriefBondInfo("SU29006RMFS2", "ОФЗ 29006", "RU000A0JV4L2"),

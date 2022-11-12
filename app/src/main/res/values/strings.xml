@@ -15,10 +15,10 @@
     <string name="result_percent">доходность, год.</string>
     <string name="dd_mm_yyyy">DD.MM.YYYY</string>
     <string name="loading">Загрузка...</string>
-    <string name="not_found">Не найдено</string>
+    <string name="not_found">Ничего не найдено</string>
     <string name="failed_to_load">Ошибка загрузки</string>
     <string name="calculator_screen">Калькулятор</string>
     <string name="search_screen">Поиск</string>
-    <string name="search_field_label">поиск</string>
-    <string name="search_field_placeholder">Тикер или ISIN</string>
+<!--    <string name="search_field_label">поиск</string>-->
+    <string name="search_field_placeholder">Поиск по названию или ISIN</string>
 </resources>
