@@ -1,6 +1,7 @@
 package com.nxtru.bondscalc.presentation
 
 import android.util.Log
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nxtru.bondscalc.domain.models.BondParams
@@ -52,6 +53,16 @@ class MainViewModel(
 
     fun onSearchScreenSearch(pattern: String) {
         viewModelScope.launch {
+            if (pattern.length < 3) {
+                updateSearchScreenUIState {
+                    copy(
+                        isSearching = false,
+                        messageId = R.string.search_field_too_short,
+                        tickers = emptyList(),
+                    )
+                }
+                return@launch
+            }
             updateSearchScreenUIState {
                 copy(isSearching = true)
             }
@@ -59,9 +70,11 @@ class MainViewModel(
             if (foundTickers == null) {
                 showError(R.string.failed_to_load)
             }
+            val tickers = foundTickers ?: emptyList()
             updateSearchScreenUIState {
                 copy(
-                    tickers = foundTickers ?: emptyList(),
+                    tickers = tickers,
+                    messageId = if (tickers.isEmpty()) R.string.not_found else R.string.empty,
                     isSearching = false
                 )
             }
@@ -145,7 +158,7 @@ class MainViewModel(
         }
     }
 
-    private suspend fun showError(msgId: Int) {
+    private suspend fun showError(@StringRes msgId: Int) {
         _errorMessageCode.emit(msgId)
     }
 
@@ -175,8 +188,8 @@ class MainViewModel(
 private fun toUIResults(value: BondResults?): BondCalcUIResult =
     if (value == null) BondCalcUIResult.UNDEFINED
     else BondCalcUIResult(
-        String.format("%,.2f₽", value.income),
-        String.format("%,.2f", value.ytm * 100) + "%"
+        String.format("%,.2f ₽", value.income),
+        String.format("%,.2f", value.ytm * 100) + " %"
     )
 
 data class BondCalcUIResult(

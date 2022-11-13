@@ -21,4 +21,6 @@
     <string name="search_screen">Поиск</string>
 <!--    <string name="search_field_label">поиск</string>-->
     <string name="search_field_placeholder">Поиск по названию или ISIN</string>
+    <string name="search_field_too_short">Введите минимум 3 символа</string>
+    <string name="empty"></string>
 </resources>

@@ -261,7 +261,7 @@ internal fun getTodayDate(): String {
 @Composable
 fun CalculatorScreenPreview() {
     CalculatorScreen(
-        uiState = CalculatorScreenUIState(calcResult = BondCalcUIResult("14.5₽", "9.5%")),
+        uiState = CalculatorScreenUIState(calcResult = BondCalcUIResult("14.5 ₽", "9.5 %")),
         onUIStateChange = {}
     )
 }

@@ -1,6 +1,7 @@
 package com.nxtru.bondscalc.presentation.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
@@ -12,6 +13,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,13 +33,21 @@ fun SearchScreen(
     onSearch: (String) -> Unit,
     onSelected: (BriefBondInfo) -> Unit,
 ) {
+    val focusRequester = remember { FocusRequester() }
+    val shouldFocus = uiState.tickers.isEmpty()
+    if (shouldFocus) {
+        LaunchedEffect(Unit) {
+            focusRequester.requestFocus()
+        }
+    }
     Column(
         modifier = modifier
     ) {
         TickerField(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(all = padding),
+                .padding(all = padding)
+                .focusRequester(focusRequester),
             value = uiState.pattern,
             onSearch = onSearch,
             onValueChange = { onUIStateChange(uiState.copy(pattern = it)) },
@@ -63,7 +74,7 @@ fun SearchScreen(
             AlignCenterBox {
                 Text(
                     modifier = Modifier.padding(padding),
-                    text = stringResource(R.string.not_found),
+                    text = stringResource(uiState.messageId),
                     color = LocalContentColor.current.copy(alpha = 0.5f)
                 )
             }
@@ -91,6 +102,7 @@ private fun TickerField(
     onSearch: (String) -> Unit,
     onClear: () -> Unit,
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
@@ -102,7 +114,11 @@ private fun TickerField(
                 Icon(
                     imageVector = Icons.Filled.Close,
                     contentDescription = null,
-                    modifier = Modifier.clickable(onClick = onClear)
+                    modifier = Modifier.clickable(
+                        interactionSource = interactionSource,
+                        indication = null,
+                        onClick = onClear,
+                    )
                 )
             }
         },
@@ -145,6 +161,7 @@ private fun BriefBondInfoCard(
 private val initial = SearchScreenUIState(
     pattern = "ОФЗ",
     isSearching = false,
+//    messageId = R.string.search_field_too_short,
 //    tickers = emptyList(),
     tickers = listOf(
         BriefBondInfo("SU26229RMFS3", "ОФЗ 26229", "RU000A100EG3"),
