@@ -14,7 +14,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.nxtru.bondscalc.R
-import com.nxtru.bondscalc.domain.models.BondInfo
 import com.nxtru.bondscalc.domain.models.BondParams
 import com.nxtru.bondscalc.presentation.ui.theme.MainTheme
 import com.nxtru.bondscalc.presentation.components.*
@@ -49,9 +48,6 @@ fun MainScreenOld(viewModel: MainViewModel) {
         uiState = uiState,
         onUIStateChange = viewModel::onUIStateChange,
         onSearchScreenSearch = viewModel::onSearchScreenSearch,
-        bondParams = viewModel.bondParams,
-        calcResult = viewModel.calcResult,
-        bondInfo = viewModel.bondInfo,
         errorMessageCode = viewModel.errorMessageCode,
         onBondParamsChange = viewModel::onBondParamsChange,
         onTickerSelectionDone = viewModel::onTickerSelectionDone,
@@ -64,9 +60,6 @@ fun MainContent(
     uiState: MainUIState,
     onUIStateChange: (MainUIState) -> Unit,
     onSearchScreenSearch: (String) -> Unit,
-    bondParams: BondParams,
-    calcResult: BondCalcUIResult,
-    bondInfo: BondInfo?,
     errorMessageCode: Flow<Int>,
     onBondParamsChange: (BondParams) -> Unit,
     onTickerSelectionDone: (String) -> Unit,
@@ -106,10 +99,11 @@ fun MainContent(
                 val secId = backStackEntry.arguments?.getString(NavArgument.secId) ?: ""
                 if (secId.isNotEmpty()) onTickerSelectionDone(secId)
                 CalculatorScreen(
-                    uiState = CalculatorScreenUIState(bondParams, calcResult, bondInfo),
+                    uiState = uiState.calculatorScreenUIState,
                     onUIStateChange = {
+                        // TODO: use onUIStateChange
                         onBondParamsChange(it.bondParams)
-                        onUIStateChange(uiState.copy(calculatorScreenUIState = it))
+//                        onUIStateChange(uiState.copy(calculatorScreenUIState = it))
                     },
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -140,15 +134,16 @@ fun MainContent(
 //)
 @Composable
 fun PreviewMessageCard() {
-    var uiState by remember { mutableStateOf(MainUIState()) }
+    var uiState by remember { mutableStateOf(MainUIState(
+        calculatorScreenUIState = CalculatorScreenUIState(
+            calcResult = BondCalcUIResult("14.5 ₽", "9.5 %")
+        )
+    )) }
     MainTheme {
         MainContent(
             uiState = uiState,
             onUIStateChange = { uiState = it},
             onSearchScreenSearch = {},
-            bondParams = BondParams.EMPTY,
-            calcResult = BondCalcUIResult("14.5₽", "9.5%"),
-            bondInfo = null,
             errorMessageCode = emptyFlow(),
             onBondParamsChange = {},
             onTickerSelectionDone = {},

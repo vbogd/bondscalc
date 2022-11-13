@@ -1,9 +1,6 @@
 package com.nxtru.bondscalc.presentation
 
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nxtru.bondscalc.domain.models.BondParams
@@ -34,12 +31,6 @@ class MainViewModel(
     private val _uiStateFlow = MutableStateFlow(MainUIState())
     val uiStateFlow: StateFlow<MainUIState> = _uiStateFlow
 
-    var bondParams by mutableStateOf(BondParams.EMPTY)
-        private set
-    var calcResult by mutableStateOf(BondCalcUIResult.UNDEFINED)
-        private set
-    var bondInfo by mutableStateOf<BondInfo?>(null)
-        private set
     // see https://blog.devgenius.io/snackbars-in-jetpack-compose-d1b553224dca
     private val _errorMessageCode = MutableSharedFlow<Int>()
     val errorMessageCode = _errorMessageCode.asSharedFlow()
@@ -47,8 +38,10 @@ class MainViewModel(
     private val bondCalcUseCase = BondCalcUseCase()
 
     init {
-        loadBondParams()
-        calculate()
+        viewModelScope.launch {
+            loadBondParams()
+            calculate()
+        }
     }
 
     fun onUIStateChange(value: MainUIState) {
@@ -76,13 +69,17 @@ class MainViewModel(
     }
 
     fun onBondParamsChange(value: BondParams) {
-        bondParams = value
-        saveBondParams()
-        calculate()
+        viewModelScope.launch {
+            updateCalculatorScreenUIState {
+                copy(bondParams = value)
+            }
+            saveBondParams()
+            calculate()
+        }
     }
 
     fun onTickerSelectionDone(secId: String) {
-        if (bondInfo?.secId == secId) return
+        if (uiState().calculatorScreenUIState.bondInfo?.secId == secId) return
         viewModelScope.launch {
             // TODO: show loading indicator
             val bondInfo = loadBondInfoUseCase(secId)
@@ -94,6 +91,9 @@ class MainViewModel(
     /*
      * Aux functions.
      */
+    private fun uiState() = uiStateFlow.value
+    private fun calculatorScreenUIState() = uiState().calculatorScreenUIState
+
     private suspend fun updateUIState(value: MainUIState) {
         _uiStateFlow.emit(value)
     }
@@ -111,20 +111,38 @@ class MainViewModel(
         }
     }
 
+    private suspend fun updateCalculatorScreenUIState(
+        modifier: CalculatorScreenUIState.() -> CalculatorScreenUIState
+    ) {
+        updateUIState {
+            val newState = modifier.invoke(calculatorScreenUIState)
+            copy(calculatorScreenUIState = newState)
+        }
+    }
+
+    // TODO: simplify
     private fun onUpdateBondInfo(value: BondInfo?) {
-        bondInfo = value
-        var newBondParams = bondParams.copy(
-            ticker = value?.ticker ?: "",
-            coupon = value?.coupon ?: "",
-            parValue = value?.parValue ?: "",
-        )
+        viewModelScope.launch {
+            updateCalculatorScreenUIState {
+                var newBondParams = bondParams.copy(
+                    ticker = value?.ticker ?: "",
+                    coupon = value?.coupon ?: "",
+                    parValue = value?.parValue ?: "",
+                )
 //        if (bondParams.tillMaturity) {
-            newBondParams = newBondParams.copy(
-                sellDate = value?.maturityDate ?: "",
-                sellPrice = "100",
-            )
+                newBondParams = newBondParams.copy(
+                    sellDate = value?.maturityDate ?: "",
+                    sellPrice = "100",
+                )
 //        }
-        onBondParamsChange(newBondParams)
+                copy(
+                    bondInfo = value,
+                    bondParams = newBondParams
+                )
+            }
+            saveBondParams()
+            calculate()
+        }
     }
 
     private suspend fun showError(msgId: Int) {
@@ -132,19 +150,24 @@ class MainViewModel(
     }
 
     private fun saveBondParams() {
-        saveBondParamsUseCase.execute(bondParams)
+        saveBondParamsUseCase.execute(calculatorScreenUIState().bondParams)
     }
 
-    private fun loadBondParams() {
-        bondParams = loadBondParamsUseCase.execute()
+    private suspend fun loadBondParams() {
+        updateCalculatorScreenUIState {
+            copy(bondParams = loadBondParamsUseCase.execute())
+        }
     }
 
-    private fun calculate() {
+    private suspend fun calculate() {
+        val bondParams = calculatorScreenUIState().bondParams
         Log.d(TAG, "params = $bondParams")
         val res = bondCalcUseCase.execute(bondParams)
         Log.d(TAG, "result = $res")
 
-        calcResult = toUIResults(res)
+        updateCalculatorScreenUIState {
+            copy(calcResult = toUIResults(res))
+        }
     }
 }
 
