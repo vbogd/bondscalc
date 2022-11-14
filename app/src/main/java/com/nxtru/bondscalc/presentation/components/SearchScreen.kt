@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,12 +35,15 @@ fun SearchScreen(
     onSelected: (BriefBondInfo) -> Unit,
 ) {
     val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
     val shouldFocus = uiState.tickers.isEmpty()
-    if (shouldFocus) {
-        LaunchedEffect(Unit) {
-            focusRequester.requestFocus()
+        LaunchedEffect(shouldFocus) {
+            if (shouldFocus) {
+                focusRequester.requestFocus()
+            } else {
+                focusManager.clearFocus()
+            }
         }
-    }
     Column(
         modifier = modifier
     ) {
