@@ -19,6 +19,7 @@ import com.nxtru.bondscalc.presentation.ui.theme.MainTheme
 import com.nxtru.bondscalc.presentation.components.*
 import com.nxtru.bondscalc.presentation.models.CalculatorScreenUIState
 import com.nxtru.bondscalc.presentation.models.MainUIState
+import com.nxtru.bondscalc.presentation.models.SearchScreenUIState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.emptyFlow
@@ -68,6 +69,9 @@ fun MainContent(
     // see https://stackoverflow.com/a/73006218
     val snackbarHostState = remember { SnackbarHostState() }
     val navController = rememberNavController()
+    val onSearchScreenUIStateChange = { v: SearchScreenUIState ->
+        onUIStateChange(uiState.copy(searchScreenUIState = v))
+    }
     LaunchedEffect(Unit) {
         errorMessageCode.collectLatest { errCode ->
             snackbarHostState.showSnackbar(
@@ -85,6 +89,23 @@ fun MainContent(
 //            .navigationBarsPadding()
 //            .imePadding(),
 //                .verticalScroll(rememberScrollState()),
+        topBar = {
+            val ssUIState = uiState.searchScreenUIState
+            TopAppBar(
+                navController = navController,
+                searchTickerField = {
+                    SearchTickerField(
+                        value = uiState.searchScreenUIState.pattern,
+                        onValueChange = { onSearchScreenUIStateChange(ssUIState.copy(pattern = it)) },
+                        shouldFocus = uiState.searchScreenUIState.tickers.isEmpty(),
+                        onSearch = onSearchScreenSearch,
+                        onClear = {
+                            onSearchScreenUIStateChange(ssUIState.copy(pattern = "", tickers = emptyList()))
+                        }
+                    )
+                }
+            )
+        },
         bottomBar = { BottomBar(navController) },
     ) { contentPadding ->
         NavHost(
@@ -111,10 +132,6 @@ fun MainContent(
             composable(Screen.Search.route) {
                 SearchScreen(
                     uiState = uiState.searchScreenUIState,
-                    onUIStateChange = {
-                        onUIStateChange(uiState.copy(searchScreenUIState = it))
-                    },
-                    onSearch = onSearchScreenSearch,
                     onSelected = {
                         navController.navigate(getCalculatorRoute(it.secId))
                     },

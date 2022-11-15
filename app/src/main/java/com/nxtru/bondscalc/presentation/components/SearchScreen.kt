@@ -1,7 +1,6 @@
 package com.nxtru.bondscalc.presentation.components
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
@@ -15,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -29,37 +29,12 @@ private val padding = 8.dp
 @Composable
 fun SearchScreen(
     uiState: SearchScreenUIState,
-    onUIStateChange: (SearchScreenUIState) -> Unit,
     modifier: Modifier = Modifier,
-    onSearch: (String) -> Unit,
     onSelected: (BriefBondInfo) -> Unit,
 ) {
-    val focusRequester = remember { FocusRequester() }
-    val focusManager = LocalFocusManager.current
-    val shouldFocus = uiState.tickers.isEmpty()
-        LaunchedEffect(shouldFocus) {
-            if (shouldFocus) {
-                focusRequester.requestFocus()
-            } else {
-                focusManager.clearFocus()
-            }
-        }
     Column(
         modifier = modifier
     ) {
-        TickerField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(all = padding)
-                .focusRequester(focusRequester),
-            value = uiState.pattern,
-            onSearch = onSearch,
-            onValueChange = { onUIStateChange(uiState.copy(pattern = it)) },
-            onClear = {
-                onUIStateChange(uiState.copy(pattern = "", tickers = emptyList()))
-            }
-        )
-        Spacer(Modifier.height(padding))
         if (uiState.isSearching) {
             AlignCenterBox {
                 CircularProgressIndicator()
@@ -77,7 +52,6 @@ fun SearchScreen(
         } else {
             AlignCenterBox {
                 Text(
-                    modifier = Modifier.padding(padding),
                     text = stringResource(uiState.messageId),
                     color = LocalContentColor.current.copy(alpha = 0.5f)
                 )
@@ -99,38 +73,49 @@ private fun AlignCenterBox(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TickerField(
+fun SearchTickerField(
     value: String,
-    modifier: Modifier = Modifier,
     onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    shouldFocus: Boolean,
     onSearch: (String) -> Unit,
     onClear: () -> Unit,
 ) {
-    val interactionSource = remember { MutableInteractionSource() }
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+    LaunchedEffect(shouldFocus) {
+        if (shouldFocus) {
+            focusRequester.requestFocus()
+        } else {
+            focusManager.clearFocus()
+        }
+    }
+
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-//        label = { Text(stringResource(R.string.search_field_label)) },
         placeholder = { Text(stringResource(R.string.search_field_placeholder)) },
         singleLine = true,
         trailingIcon = {
             if (value.isNotEmpty()) {
-                Icon(
+                ClickableIcon(
                     imageVector = Icons.Filled.Close,
-                    contentDescription = null,
-                    modifier = Modifier.clickable(
-                        interactionSource = interactionSource,
-                        indication = null,
-                        onClick = onClear,
-                    )
+                    onClick = onClear,
                 )
             }
         },
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = Color.Transparent,
+            unfocusedBorderColor = Color.Transparent,
+            errorBorderColor = Color.Transparent
+        ),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
         keyboardActions = KeyboardActions(
             onSearch = { onSearch(value) },
         ),
         modifier = modifier
+            .fillMaxWidth()
+            .focusRequester(focusRequester)
     )
 }
 
@@ -181,10 +166,6 @@ fun PreviewSearchScreen() {
     SearchScreen(
         uiState = uiState,
         modifier = Modifier.fillMaxSize(),
-        onUIStateChange = {
-              uiState = it
-        },
-        onSearch = { uiState = uiState.copy(tickers = initial.tickers) },
         onSelected = { uiState = uiState.copy(pattern = it.secId, tickers = emptyList()) },
     )
 }
