@@ -106,7 +106,7 @@ fun MainContent(
                 }
             )
         },
-        bottomBar = { BottomBar(navController) },
+//        bottomBar = { BottomBar(navController) },
     ) { contentPadding ->
         NavHost(
             navController = navController,

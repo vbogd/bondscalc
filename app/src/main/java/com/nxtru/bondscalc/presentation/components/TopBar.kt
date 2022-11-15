@@ -28,20 +28,30 @@ fun TopAppBar(
             searchTickerField = searchTickerField
         )
     } else {
-        CalculatorScreenTopBar()
+        CalculatorScreenTopBar(
+            onSearch = {
+                navController.navigate(Screen.Search.route) {
+                    popUpTo(Screen.Search.route) {
+                        inclusive = true
+                    }
+                }
+            }
+        )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun CalculatorScreenTopBar() {
+private fun CalculatorScreenTopBar(
+    onSearch: () -> Unit,
+) {
     TopAppBar(
         modifier = Modifier.fillMaxWidth(),
         title = { Text(stringResource(R.string.calculator_screen_title)) },
         actions = {
             ClickableIcon(
                 imageVector = Icons.Filled.Search,
-                onClick = {}
+                onClick = onSearch
             )
         }
     )
