@@ -25,7 +25,10 @@ fun TopAppBar(
     val searchSelected = currentDestination?.hierarchy?.any { it.route == Screen.Search.route } == true
     if (searchSelected) {
         SearchScreenTopBar(
-            searchTickerField = searchTickerField
+            searchTickerField = searchTickerField,
+            onBack = {
+                navController.popBackStack()
+            }
         )
     } else {
         CalculatorScreenTopBar(
@@ -61,6 +64,7 @@ private fun CalculatorScreenTopBar(
 @Composable
 private fun SearchScreenTopBar(
     searchTickerField: @Composable () -> Unit,
+    onBack: () -> Unit,
 ) {
     TopAppBar(
         modifier = Modifier.fillMaxWidth(),
@@ -68,7 +72,7 @@ private fun SearchScreenTopBar(
         navigationIcon = {
             ClickableIcon(
                 imageVector = Icons.Filled.ArrowBack,
-                onClick = {}
+                onClick = onBack
             )
         },
 //        actions = {
@@ -88,6 +92,7 @@ fun PreviewTopBar() {
     SearchScreenTopBar(
         searchTickerField = {
             OutlinedTextField(value = "", onValueChange = {})
-        }
+        },
+        onBack = {}
     )
 }
