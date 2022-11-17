@@ -25,4 +25,12 @@ data class BondInfo(
     val coupon: String,
     // MOEX: MATDATE
     val maturityDate: String,
+    // MOEX: CURRENCYID
+    val currencyId: String,
+    // MOEX: PREVPRICE
+    val prevPrice: String,
+    // MOEX: NEXTCOUPON
+    val nextCouponDate: String,
+    // MOEX: BOARDID
+    val boardId: String,
 )

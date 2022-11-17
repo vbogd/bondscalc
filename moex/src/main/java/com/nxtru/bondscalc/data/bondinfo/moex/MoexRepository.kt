@@ -55,7 +55,7 @@ class MoexRepository(
                 // TODO: CSV response is in windows-1251 encoding
                 val resp = client.get { url(MoexRoutes.loadBondInfoUrl(secId)) }
                 if (resp.status == HttpStatusCode.OK) {
-                    extreactBondInfo(resp.body<String>().lines())
+                    extractBondInfo(resp.body<String>().lines())
                 } else
                     null
             } catch (e: Exception) {
@@ -118,18 +118,25 @@ internal fun extractTicker(csv: String): BriefBondInfo? {
     )
 }
 
-internal fun extreactBondInfo(csvLines: List<String>): BondInfo? {
+private val validBoards = listOf("TQCB", "TQOB")
+internal fun extractBondInfo(csvLines: List<String>): BondInfo? {
     val limit = 40
-    val fields = csvLines
+    return csvLines
         .map { it.split(";", limit = limit) }
-        .firstOrNull { it.size == limit }
-        ?: return null
-    return BondInfo(
-        secId = fields[0],
-        ticker = fields[2],
-        isin = fields[29],
-        parValue = fields[10],
-        coupon = fields[36],
-        maturityDate = fields[13],
-    )
+        .filter { it.size == limit }
+        .map { fields ->
+            BondInfo(
+                secId = fields[0],
+                ticker = fields[2],
+                isin = fields[29],
+                parValue = fields[10],
+                coupon = fields[36],
+                maturityDate = fields[13],
+                currencyId = fields[26],
+                prevPrice = fields[8],
+                nextCouponDate = fields[6],
+                boardId = fields[1],
+            )
+        }
+        .firstOrNull { it.boardId in validBoards }
 }
