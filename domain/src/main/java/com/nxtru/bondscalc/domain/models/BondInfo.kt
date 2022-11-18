@@ -27,8 +27,8 @@ data class BondInfo(
     val maturityDate: String,
     // MOEX: CURRENCYID
     val currencyId: String,
-    // MOEX: PREVPRICE
-    val prevPrice: String,
+    // MOEX: LAST
+    val lastPrice: String,
     // MOEX: NEXTCOUPON
     val nextCouponDate: String,
     // MOEX: BOARDID

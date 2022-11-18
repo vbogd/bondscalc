@@ -18,7 +18,6 @@ import com.nxtru.bondscalc.R
 import com.nxtru.bondscalc.domain.models.BondParams
 import com.nxtru.bondscalc.presentation.*
 import com.nxtru.bondscalc.presentation.models.CalculatorScreenUIState
-import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
@@ -249,12 +248,6 @@ fun Header(text: String, modifier: Modifier = Modifier) {
         color = MaterialTheme.colorScheme.secondary,
         style = MaterialTheme.typography.titleLarge
     )
-}
-
-private val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.US)
-
-internal fun getTodayDate(): String {
-    return dateFormat.format(Date())
 }
 
 @Preview(showBackground = true)

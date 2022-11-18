@@ -6,7 +6,7 @@ import org.junit.Assert.*
 
 import org.junit.Test
 
-class MoexServiceTest {
+class MoexRepositoryTest {
 
 //    @Test
 //    fun searchBonds() {
@@ -86,7 +86,7 @@ class MoexServiceTest {
                 coupon = "7.500",
                 maturityDate = "27.07.2023",
                 currencyId = "SUR",
-                prevPrice = "99.8",
+                lastPrice = "99.8",
                 nextCouponDate = "27.11.2022",
                 boardId = "TQCB",
             ),
@@ -101,7 +101,7 @@ class MoexServiceTest {
                 coupon = "9.500",
                 maturityDate = "01.09.2032",
                 currencyId = "SUR",
-                prevPrice = "92.29",
+                lastPrice = "92.26",
                 nextCouponDate = "14.12.2022",
                 boardId = "TQCB",
             ),
@@ -116,11 +116,26 @@ class MoexServiceTest {
                 coupon = "7.150",
                 maturityDate = "12.11.2025",
                 currencyId = "SUR",
-                prevPrice = "96.848",
-                nextCouponDate = "16.11.2022",
+                lastPrice = "97.334",
+                nextCouponDate = "17.05.2023",
                 boardId = "TQOB",
             ),
             extractBondInfo(readLines("/extractTickets/SU26229RMFS3.csv"))
+        )
+        assertEquals(
+            BondInfo(
+                secId = "RU000A101J58",
+                ticker = "СберИОС233",
+                isin = "RU000A101J58",
+                parValue = "1000",
+                coupon = "0.010",
+                maturityDate = "01.04.2025",
+                currencyId = "SUR",
+                lastPrice = "90.8",
+                nextCouponDate = "01.04.2025",
+                boardId = "TQCB",
+            ),
+            extractBondInfo(readLines("/extractTickets/RU000A101J58.csv"))
         )
         assertEquals(
             null,

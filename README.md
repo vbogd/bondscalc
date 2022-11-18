@@ -15,6 +15,9 @@ https://proandroiddev.com/viewmodels-using-compose-mutablestateflows-or-mutables
 collectAsStateWithLifecycle, alpha version now
 https://medium.com/androiddevelopers/consuming-flows-safely-in-jetpack-compose-cde014d0d5a3
 
+Integrate Scaffold and NavController
+https://developer.android.com/jetpack/compose/navigation#bottom-nav
+
 layers, Repositories, Data Sources
 https://developer.android.com/topic/architecture
 
@@ -27,12 +30,15 @@ https://github.com/android/compose-samples/tree/main/Reply
 ## MOEX
 
 Поиск
-http://iss.moex.com//iss/securities.csv?engine=stock&market=bonds&iss.meta=off&q=26229
+http://iss.moex.com/iss/securities.csv?engine=stock&market=bonds&iss.meta=off&q=26229
 
 Подробные данные
 http://iss.moex.com/iss/engines/stock/markets/bonds/securities/RU000A104ZQ9.csv
 
 Описание колонок
-http://iss.moex.com/iss/engines/stock/markets/bonds/securities//columns
+http://iss.moex.com/iss/engines/stock/markets/bonds/securities/columns
 
 http://iss.moex.com/iss/engines/stock/markets/bonds/securities/SU26229RMFS3.csv?iss.only=securities&iss.meta=off&iss.df=%25d.%25m.%25Y
+
+http://iss.moex.com/iss/securities.xml?engine=stock&market=bonds&is_trading=1&start=100&q=офз%205
+http://iss.moex.com/iss/securities.xml?engine=stock&market=bonds&is_trading=1&q=офз%205

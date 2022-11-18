@@ -21,7 +21,7 @@ private object MoexRoutes {
         "$baseUrl/iss/securities.csv?engine=stock&market=bonds&iss.meta=off&q=${encode(query)}"
 
     fun loadBondInfoUrl(isin: String) =
-        "$baseUrl/iss/engines/stock/markets/bonds/securities/$isin.csv?iss.only=securities&iss.meta=off&iss.df=%25d.%25m.%25Y"
+        "$baseUrl/iss/engines/stock/markets/bonds/securities/$isin.csv?iss.only=securities,marketdata&iss.meta=off&iss.df=%25d.%25m.%25Y"
 
     private fun encode(s: String) = URLEncoder.encode(s, "UTF-8")
 }
@@ -118,9 +118,19 @@ internal fun extractTicker(csv: String): BriefBondInfo? {
     )
 }
 
-private val validBoards = listOf("TQCB", "TQOB")
 internal fun extractBondInfo(csvLines: List<String>): BondInfo? {
-    val limit = 40
+    return extractSecuritiesSectionInfo(csvLines)?.let {
+        extractMarketDataSectionInfo(it, csvLines)
+    }
+}
+
+// valid MOEX bonds boards
+private val validBoards = listOf("TQCB", "TQOB")
+
+// extract info from "securities" section of MOEX response
+private fun extractSecuritiesSectionInfo(csvLines: List<String>): BondInfo? {
+    // actual size of parts in this section is 40
+    val limit = 39
     return csvLines
         .map { it.split(";", limit = limit) }
         .filter { it.size == limit }
@@ -133,10 +143,32 @@ internal fun extractBondInfo(csvLines: List<String>): BondInfo? {
                 coupon = fields[36],
                 maturityDate = fields[13],
                 currencyId = fields[26],
-                prevPrice = fields[8],
+                lastPrice = fields[8],
                 nextCouponDate = fields[6],
                 boardId = fields[1],
             )
         }
         .firstOrNull { it.boardId in validBoards }
+}
+
+private fun extractMarketDataSectionInfo(bondInfo: BondInfo, csvLines: List<String>): BondInfo {
+    // actual size of parts in this section is 60
+    val limit = 45
+    val parts = csvLines
+        .map { it.split(";", limit = limit) }
+        .filter { it.size == limit }
+        .firstOrNull { it[0] == bondInfo.secId && it[33] in validBoards }
+
+    if (parts != null) {
+        val lastPrice = parts[11]
+        var newBondInfo = bondInfo
+            if (lastPrice.isNotEmpty()) {
+            newBondInfo = bondInfo.copy(
+                lastPrice = lastPrice
+            )
+        }
+        return newBondInfo
+    } else {
+        return bondInfo
+    }
 }

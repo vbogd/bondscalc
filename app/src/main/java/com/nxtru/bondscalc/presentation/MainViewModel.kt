@@ -16,6 +16,8 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import java.text.SimpleDateFormat
+import java.util.*
 
 private const val TAG = "MainViewModel"
 
@@ -141,6 +143,8 @@ class MainViewModel(
                     ticker = value?.ticker ?: "",
                     coupon = value?.coupon ?: "",
                     parValue = value?.parValue ?: "",
+                    buyPrice = value?.lastPrice ?: "",
+                    buyDate = getTodayDate(),
                 )
 //        if (bondParams.tillMaturity) {
                 newBondParams = newBondParams.copy(
@@ -191,6 +195,13 @@ private fun toUIResults(value: BondResults?): BondCalcUIResult =
         String.format("%,.2f ₽", value.income),
         String.format("%,.2f", value.ytm * 100) + " %"
     )
+
+
+private val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.US)
+
+internal fun getTodayDate(): String {
+    return dateFormat.format(Date())
+}
 
 data class BondCalcUIResult(
     // income in roubles
