@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.nxtru.bondscalc.domain.models.BondParams
 import com.nxtru.bondscalc.domain.models.BondResults
 import com.nxtru.bondscalc.domain.usecase.*
 import com.nxtru.bondscalc.domain.usecase.bondinfo.*
@@ -43,13 +42,12 @@ class MainViewModel(
     init {
         viewModelScope.launch {
             loadBondParams()
-            calculate()
         }
     }
 
     fun onUIStateChange(value: MainUIState) {
         viewModelScope.launch {
-            _uiStateFlow.emit(value)
+            updateUIState(value)
         }
     }
 
@@ -83,16 +81,6 @@ class MainViewModel(
         }
     }
 
-    fun onBondParamsChange(value: BondParams) {
-        viewModelScope.launch {
-            updateCalculatorScreenUIState {
-                copy(bondParams = value)
-            }
-            saveBondParams()
-            calculate()
-        }
-    }
-
     fun onTickerSelectionDone(secId: String) {
         if (uiState().calculatorScreenUIState.bondInfo?.secId == secId) return
         viewModelScope.launch {
@@ -110,7 +98,12 @@ class MainViewModel(
     private fun calculatorScreenUIState() = uiState().calculatorScreenUIState
 
     private suspend fun updateUIState(value: MainUIState) {
+        val prevValue = uiState()
         _uiStateFlow.emit(value)
+        if (prevValue.calculatorScreenUIState.bondParams != value.calculatorScreenUIState.bondParams) {
+            saveBondParams()
+            calculate()
+        }
     }
 
     private suspend fun updateUIState(modifier: MainUIState.() -> MainUIState) {
@@ -157,8 +150,6 @@ class MainViewModel(
                     bondParams = newBondParams
                 )
             }
-            saveBondParams()
-            calculate()
         }
     }
 

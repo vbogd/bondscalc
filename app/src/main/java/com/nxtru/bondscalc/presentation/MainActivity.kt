@@ -14,7 +14,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.nxtru.bondscalc.R
-import com.nxtru.bondscalc.domain.models.BondParams
 import com.nxtru.bondscalc.presentation.ui.theme.MainTheme
 import com.nxtru.bondscalc.presentation.components.*
 import com.nxtru.bondscalc.presentation.models.CalculatorScreenUIState
@@ -50,7 +49,6 @@ fun MainScreenOld(viewModel: MainViewModel) {
         onUIStateChange = viewModel::onUIStateChange,
         onSearchScreenSearch = viewModel::onSearchScreenSearch,
         errorMessageCode = viewModel.errorMessageCode,
-        onBondParamsChange = viewModel::onBondParamsChange,
         onTickerSelectionDone = viewModel::onTickerSelectionDone,
     )
 }
@@ -62,7 +60,6 @@ fun MainContent(
     onUIStateChange: (MainUIState) -> Unit,
     onSearchScreenSearch: (String) -> Unit,
     errorMessageCode: Flow<Int>,
-    onBondParamsChange: (BondParams) -> Unit,
     onTickerSelectionDone: (String) -> Unit,
 ) {
     // see https://blog.devgenius.io/snackbars-in-jetpack-compose-d1b553224dca
@@ -122,9 +119,7 @@ fun MainContent(
                 CalculatorScreen(
                     uiState = uiState.calculatorScreenUIState,
                     onUIStateChange = {
-                        // TODO: use onUIStateChange
-                        onBondParamsChange(it.bondParams)
-//                        onUIStateChange(uiState.copy(calculatorScreenUIState = it))
+                        onUIStateChange(uiState.copy(calculatorScreenUIState = it))
                     },
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -162,7 +157,6 @@ fun PreviewMessageCard() {
             onUIStateChange = { uiState = it},
             onSearchScreenSearch = {},
             errorMessageCode = emptyFlow(),
-            onBondParamsChange = {},
             onTickerSelectionDone = {},
         )
     }

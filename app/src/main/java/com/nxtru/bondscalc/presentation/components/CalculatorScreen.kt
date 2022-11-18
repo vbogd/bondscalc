@@ -147,7 +147,7 @@ fun CalculatorScreen(
                 ResultRow(stringResource(R.string.result_percent), calcResult.ytm)
             }
         }
-        Text(text = uiState.bondInfo?.toString() ?: "null")
+//        Text(text = uiState.bondInfo?.toString() ?: "null")
     }
 }
 
