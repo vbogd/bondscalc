@@ -1,13 +1,13 @@
 package com.nxtru.bondscalc.domain.usecase
 
 import com.nxtru.bondscalc.domain.models.BondParams
-import com.nxtru.bondscalc.domain.models.BondResults
+import com.nxtru.bondscalc.domain.models.BondCalcResult
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
 class BondCalcUseCase {
-    fun execute(params: BondParams): BondResults? {
+    fun execute(params: BondParams): BondCalcResult? {
         try {
             val commission = getPercentValue(params.commission)
             val tax = getPercentValue(params.tax)
@@ -33,8 +33,9 @@ class BondCalcUseCase {
             )
             val ytm = getProfitability(
                 commission, tax, coupon, parValue, buyPrice, buyDate, sellPrice, sellDate, tillMaturity)
+            val currentYield = calculateCurrentYield(tax, coupon, buyPrice)
 
-            return BondResults(income, ytm)
+            return BondCalcResult(income, ytm, currentYield)
         } catch (e: NumberFormatException) {
             return null
         } catch (e: ParseException) {
@@ -54,3 +55,12 @@ private fun getDateValue(value: String): Date? {
 }
 
 private fun toDouble(value: String): Double = value.replace(',', '.').toDouble()
+
+private fun calculateCurrentYield(
+    tax: Double,
+    coupon: Double,
+    buyPrice: Double,
+
+): Double {
+    return coupon / buyPrice * 100 * (1 - tax)
+}

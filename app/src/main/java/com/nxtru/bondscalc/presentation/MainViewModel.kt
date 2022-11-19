@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.nxtru.bondscalc.domain.models.BondResults
+import com.nxtru.bondscalc.domain.models.BondCalcResult
 import com.nxtru.bondscalc.domain.usecase.*
 import com.nxtru.bondscalc.domain.usecase.bondinfo.*
 import kotlinx.coroutines.launch
@@ -180,11 +180,12 @@ class MainViewModel(
 }
 
 // TODO: should be use case?
-private fun toUIResults(value: BondResults?): BondCalcUIResult =
+private fun toUIResults(value: BondCalcResult?): BondCalcUIResult =
     if (value == null) BondCalcUIResult.UNDEFINED
     else BondCalcUIResult(
-        String.format("%,.2f ₽", value.income),
-        String.format("%,.2f", value.ytm * 100) + " %"
+        income = String.format("%,.2f ₽", value.income),
+        ytm = String.format("%,.2f", value.ytm) + " %",
+        currentYield = String.format("%,.2f", value.currentYield) + " %",
     )
 
 
@@ -198,8 +199,9 @@ data class BondCalcUIResult(
     // income in roubles
     val income: String,
     val ytm: String,
+    val currentYield: String,
 ) {
     companion object {
-        val UNDEFINED = BondCalcUIResult("", "")
+        val UNDEFINED = BondCalcUIResult("", "", "")
     }
 }

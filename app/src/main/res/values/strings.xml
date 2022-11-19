@@ -13,6 +13,7 @@
     <string name="result">результаты</string>
     <string name="result_rub">прибыль</string>
     <string name="result_percent">доходность, год.</string>
+    <string name="result_current_yield">тек. доходность</string>
     <string name="dd_mm_yyyy">DD.MM.YYYY</string>
     <string name="loading">Загрузка...</string>
     <string name="not_found">Ничего не найдено</string>

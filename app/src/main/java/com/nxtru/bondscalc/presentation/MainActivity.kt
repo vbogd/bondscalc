@@ -148,7 +148,7 @@ fun MainContent(
 fun PreviewMessageCard() {
     var uiState by remember { mutableStateOf(MainUIState(
         calculatorScreenUIState = CalculatorScreenUIState(
-            calcResult = BondCalcUIResult("14.5 ₽", "9.5 %")
+            calcResult = BondCalcUIResult("14.5 ₽", "9.5 %", "8.1 %")
         )
     )) }
     MainTheme {

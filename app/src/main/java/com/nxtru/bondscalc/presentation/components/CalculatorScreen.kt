@@ -145,6 +145,7 @@ fun CalculatorScreen(
                 Header(stringResource(R.string.result))
                 ResultRow(stringResource(R.string.result_rub), calcResult.income)
                 ResultRow(stringResource(R.string.result_percent), calcResult.ytm)
+                ResultRow(stringResource(R.string.result_current_yield), calcResult.currentYield)
             }
         }
 //        Text(text = uiState.bondInfo?.toString() ?: "null")
@@ -254,7 +255,9 @@ fun Header(text: String, modifier: Modifier = Modifier) {
 @Composable
 fun CalculatorScreenPreview() {
     CalculatorScreen(
-        uiState = CalculatorScreenUIState(calcResult = BondCalcUIResult("14.5 ₽", "9.5 %")),
+        uiState = CalculatorScreenUIState(
+            calcResult = BondCalcUIResult("14.5 ₽", "9.5 %", "8 %")
+        ),
         onUIStateChange = {}
     )
 }

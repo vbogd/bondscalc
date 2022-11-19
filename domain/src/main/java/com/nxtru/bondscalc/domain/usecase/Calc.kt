@@ -57,7 +57,7 @@ internal fun getProfitability(
 
 //    =((C16/(РАЗНДАТ(C11;C14;"d")))*365)/(C10*C8+((C13*C8)+(C10*C8))*C5)
     return (income * 365 / days) /
-            (buyPrice * parValue + (sellPrice * parValue + buyPrice * parValue) * commission)
+            (buyPrice * parValue + (sellPrice * parValue + buyPrice * parValue) * commission) * 100
 }
 
 private fun daysBetween(start: Date, end: Date): Long =

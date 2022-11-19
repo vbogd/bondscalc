@@ -12,35 +12,58 @@ class BondCalcUseCaseTest {
     @Test
     fun `normal params`() {
         val actual = subj.execute(BondParams(
-            "", "0.05", "13", "0.01", "1000",
-            "97.10", "26.03.2021",
-            "99", "06.05.2021", false
+            ticker = "",
+            commission = "0.05",
+            tax = "13",
+            coupon = "5",
+            parValue = "1000",
+            buyPrice = "97.10",
+            buyDate = "26.03.2021",
+            sellPrice = "99",
+            sellDate = "06.05.2021",
+            tillMaturity = false
         ))
 
         assertNotNull("calculated", actual)
-        assertDoubleEquals(15.69, actual!!.income)
-        assertDoubleEquals(0.1437, actual.ytm, 4)
+        assertDoubleEquals(20.56, actual!!.income)
+        assertDoubleEquals(18.83, actual.ytm)
+        assertDoubleEquals(4.48, actual.currentYield)
     }
 
     @Test
     fun `params with comma`() {
         val actual = subj.execute(BondParams(
-            "", "0,05", "13,", "0.01", "1000,0",
-            "97.10", "26.03.2021",
-            "99", "06.05.2021", false
+            ticker = "",
+            commission = "0,05",
+            tax = "13,",
+            coupon = "0.01",
+            parValue = "1000,0",
+            buyPrice = "97.10",
+            buyDate = "26.03.2021",
+            sellPrice = "99",
+            sellDate = "06.05.2021",
+            tillMaturity = false
         ))
 
         assertNotNull("calculated", actual)
         assertDoubleEquals(15.69, actual!!.income)
-        assertDoubleEquals(0.1437, actual.ytm, 4)
+        assertDoubleEquals(14.37, actual.ytm)
+        assertDoubleEquals(0.009, actual.currentYield, 4)
     }
 
     @Test
     fun `incomplete params`() {
         val actual = subj.execute(BondParams(
-            "", "0,05", "", "0.01", "1000,0",
-            "97.10", "26.03.2021",
-            "99", "06.05.2021", false
+            ticker = "",
+            commission = "0,05",
+            tax = "",
+            coupon = "0.01",
+            parValue = "1000,0",
+            buyPrice = "97.10",
+            buyDate = "26.03.2021",
+            sellPrice = "99",
+            sellDate = "06.05.2021",
+            tillMaturity = false
         ))
 
         assertNull("not calculated", actual)
@@ -49,9 +72,16 @@ class BondCalcUseCaseTest {
     @Test
     fun `invalid commission`() {
         val actual = subj.execute(BondParams(
-            "", "0,05,", "", "0.01", "1000,0",
-            "97.10", "26.03.2021",
-            "99", "06.05.2021", false
+            ticker = "",
+            commission = "0,05,",
+            tax = "",
+            coupon = "0.01",
+            parValue = "1000,0",
+            buyPrice = "97.10",
+            buyDate = "26.03.2021",
+            sellPrice = "99",
+            sellDate = "06.05.2021",
+            tillMaturity = false
         ))
 
         assertNull("not calculated", actual)
@@ -60,9 +90,16 @@ class BondCalcUseCaseTest {
     @Test
     fun `invalid date`() {
         val actual = subj.execute(BondParams(
-            "", "0,05,", "", "0.01", "1000,0",
-            "97.10", "26.03",
-            "99", "06.05.2021", false
+            ticker = "",
+            commission = "0,05,",
+            tax = "",
+            coupon = "0.01",
+            parValue = "1000,0",
+            buyPrice = "97.10",
+            buyDate = "26.03",
+            sellPrice = "99",
+            sellDate = "06.05.2021",
+            tillMaturity = false
         ))
 
         assertNull("not calculated", actual)
