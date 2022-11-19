@@ -1,12 +1,15 @@
 package com.nxtru.bondscalc.presentation.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -33,8 +36,14 @@ fun CalculatorScreen(
     val rowModifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = padding)
+    val focusManager = LocalFocusManager.current
     Column(
-        modifier = modifier
+        modifier = modifier.clickable(
+            indication = null,
+            interactionSource = remember { MutableInteractionSource() }
+        ) {
+            focusManager.clearFocus()
+        }
     ) {
         val bondParams = uiState.bondParams
         TickerField(
