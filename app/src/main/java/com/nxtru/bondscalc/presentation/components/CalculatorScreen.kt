@@ -3,7 +3,9 @@ package com.nxtru.bondscalc.presentation.components
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -38,12 +40,15 @@ fun CalculatorScreen(
         .padding(horizontal = padding)
     val focusManager = LocalFocusManager.current
     Column(
-        modifier = modifier.clickable(
-            indication = null,
-            interactionSource = remember { MutableInteractionSource() }
-        ) {
-            focusManager.clearFocus()
-        }
+        modifier = modifier
+            .clickable(
+                // disable ripple effect
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ) {
+                focusManager.clearFocus()
+            }
+            .verticalScroll(rememberScrollState())
     ) {
         val bondParams = uiState.bondParams
         TickerField(
