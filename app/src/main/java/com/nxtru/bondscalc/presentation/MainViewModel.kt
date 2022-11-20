@@ -82,7 +82,6 @@ class MainViewModel(
     }
 
     fun onTickerSelectionDone(secId: String) {
-        if (uiState().calculatorScreenUIState.bondInfo?.secId == secId) return
         viewModelScope.launch {
             // TODO: show loading indicator
             val bondInfo = loadBondInfoUseCase(secId)

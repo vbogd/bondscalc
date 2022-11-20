@@ -243,10 +243,9 @@ fun DateField(
         modifier = Modifier.fillMaxWidth(),
         label = { Text(label) },
         trailingIcon = {
-            Icon(
-                painterResource(R.drawable.ic_outline_today_24),
-                null,
-                modifier = Modifier.clickable(onClick = onToday)
+            ClickableIcon(
+                painter = painterResource(R.drawable.ic_outline_today_24),
+                onClick = onToday
             )
         },
         singleLine = true,
