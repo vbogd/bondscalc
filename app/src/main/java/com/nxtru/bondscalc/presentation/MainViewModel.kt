@@ -91,11 +91,19 @@ class MainViewModel(
         }
     }
 
+    fun onCalculatorScreenRefresh() {
+        val secId = secId()
+        if (secId.isNotEmpty()) {
+            onTickerSelectionDone(secId = secId, forceReload = true)
+        }
+    }
+
     /*
      * Aux functions.
      */
     private fun uiState() = uiStateFlow.value
     private fun calculatorScreenUIState() = uiState().calculatorScreenUIState
+    private fun secId() = calculatorScreenUIState().bondInfo?.secId ?: ""
 
     private suspend fun updateUIState(value: MainUIState) {
         val prevValue = uiState()

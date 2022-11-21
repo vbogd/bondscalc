@@ -50,6 +50,7 @@ fun MainScreenOld(viewModel: MainViewModel) {
         onSearchScreenSearch = viewModel::onSearchScreenSearch,
         errorMessageCode = viewModel.errorMessageCode,
         onTickerSelectionDone = viewModel::onTickerSelectionDone,
+        onCalculatorScreenRefresh = viewModel::onCalculatorScreenRefresh,
     )
 }
 
@@ -61,6 +62,7 @@ fun MainContent(
     onSearchScreenSearch: (String) -> Unit,
     errorMessageCode: Flow<Int>,
     onTickerSelectionDone: (String) -> Unit,
+    onCalculatorScreenRefresh: () -> Unit,
 ) {
     // see https://blog.devgenius.io/snackbars-in-jetpack-compose-d1b553224dca
     // see https://stackoverflow.com/a/73006218
@@ -69,6 +71,8 @@ fun MainContent(
     val onSearchScreenUIStateChange = { v: SearchScreenUIState ->
         onUIStateChange(uiState.copy(searchScreenUIState = v))
     }
+    val calculatorScreenRefreshAvailable =
+        (uiState.calculatorScreenUIState.bondInfo?.secId ?: "").isNotEmpty()
     LaunchedEffect(Unit) {
         errorMessageCode.collectLatest { errCode ->
             snackbarHostState.showSnackbar(
@@ -100,7 +104,9 @@ fun MainContent(
                             onSearchScreenUIStateChange(ssUIState.copy(pattern = "", tickers = emptyList()))
                         }
                     )
-                }
+                },
+                calculatorScreenRefreshAvailable = calculatorScreenRefreshAvailable,
+                onCalculatorScreenRefresh = onCalculatorScreenRefresh
             )
         },
 //        bottomBar = { BottomBar(navController) },
@@ -158,6 +164,7 @@ fun PreviewMessageCard() {
             onSearchScreenSearch = {},
             errorMessageCode = emptyFlow(),
             onTickerSelectionDone = {},
+            onCalculatorScreenRefresh = {},
         )
     }
 }
