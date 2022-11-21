@@ -8,11 +8,13 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -25,6 +27,8 @@ import com.nxtru.bondscalc.presentation.*
 import com.nxtru.bondscalc.presentation.models.CalculatorScreenUIState
 import java.util.*
 
+private val padding = 8.dp
+
 @Composable
 fun CalculatorScreen(
     uiState: CalculatorScreenUIState,
@@ -34,7 +38,6 @@ fun CalculatorScreen(
     val onBondParamsChange = { it: BondParams ->
         onUIStateChange(uiState.copy(bondParams = it))
     }
-    val padding = 8.dp
     val rowModifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = padding)
@@ -159,7 +162,12 @@ fun CalculatorScreen(
                 Header(stringResource(R.string.result))
                 ResultRow(stringResource(R.string.result_rub), calcResult.income)
                 ResultRow(stringResource(R.string.result_percent), calcResult.ytm)
-                ResultRow(stringResource(R.string.result_current_yield), calcResult.currentYield)
+                ResultRow(
+                    label = stringResource(R.string.result_current_yield),
+                    value = calcResult.currentYield,
+                    helpTitle = stringResource(R.string.help_dialog_current_yield_title),
+                    helpText = stringArrayResource(R.array.help_dialog_current_yield_body),
+                )
             }
         }
 //        Text(text = uiState.bondInfo?.toString() ?: "null")
@@ -167,15 +175,39 @@ fun CalculatorScreen(
 }
 
 @Composable
-fun ResultRow(label: String, value: String) {
+fun ResultRow(
+    label: String,
+    value: String,
+    helpTitle: String? = null,
+    helpText: Array<String> = emptyArray()
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(
-            text = label,
-            color = MaterialTheme.colorScheme.secondary,
-        )
+        Row {
+            Text(
+                text = label,
+                color = MaterialTheme.colorScheme.secondary,
+            )
+            if (helpTitle != null) {
+                val openDialog = remember { mutableStateOf(false) }
+                ClickableIcon(
+                    modifier = Modifier
+                        .padding(start = padding / 2)
+                        .requiredSize(16.dp),
+                    painter = painterResource(R.drawable.ic_baseline_info_24),
+                    onClick = { openDialog.value = true }
+                )
+                if (openDialog.value) {
+                    HelpDialog(
+                        title = helpTitle,
+                        text = helpText,
+                        onDismissRequest = { openDialog.value = false }
+                    )
+                }
+            }
+        }
         Text(
             text = value,
             fontWeight = FontWeight.Bold

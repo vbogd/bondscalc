@@ -13,12 +13,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 fun ClickableIcon(
     imageVector: ImageVector,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     Icon(
         imageVector = imageVector,
         contentDescription = null,
-        modifier = Modifier.clickable(
+        modifier = modifier.clickable(
             interactionSource = interactionSource,
             indication = null,
             onClick = onClick,
@@ -30,12 +31,13 @@ fun ClickableIcon(
 fun ClickableIcon(
     painter: Painter,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     Icon(
         painter = painter,
         contentDescription = null,
-        modifier = Modifier.clickable(
+        modifier = modifier.clickable(
             interactionSource = interactionSource,
             indication = null,
             onClick = onClick,

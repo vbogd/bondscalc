@@ -25,4 +25,11 @@
     <string name="search_field_too_short">Введите минимум 3 символа</string>
     <string name="empty"></string>
     <string name="calculator_screen_title">калькулятор</string>
+
+    <!-- Help dialogs -->
+    <string name="help_dialog_current_yield_title">Текущая доходность</string>
+    <string-array name="help_dialog_current_yield_body">
+        <item>Соотношение купона к цене покупки с учетом налога</item>
+    </string-array>
+    <string name="help_dialog_ok">Понятно</string>
 </resources>
