@@ -4,17 +4,18 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.nxtru.bondscalc.data.bondinfo.moex.MoexRepository
-import com.nxtru.bondscalc.data.repository.BondParamsRepositoryImpl
+import com.nxtru.bondscalc.data.repository.*
 import com.nxtru.bondscalc.data.storage.SharedPrefsBondParamsStorage
-import com.nxtru.bondscalc.domain.usecase.SaveBondParamsUseCase
-import com.nxtru.bondscalc.domain.usecase.LoadBondParamsUseCase
-import com.nxtru.bondscalc.domain.usecase.bondinfo.LoadBondInfoUseCase
-import com.nxtru.bondscalc.domain.usecase.bondinfo.SearchTickersUseCase
+import com.nxtru.bondscalc.domain.usecase.*
+import com.nxtru.bondscalc.domain.usecase.bondinfo.*
 
 class MainViewModelFactory(context: Context) : ViewModelProvider.Factory {
 
+    private val bondParamsStorage by lazy(LazyThreadSafetyMode.NONE) {
+        SharedPrefsBondParamsStorage(context)
+    }
     private val userRepository by lazy(LazyThreadSafetyMode.NONE) {
-        BondParamsRepositoryImpl(SharedPrefsBondParamsStorage(context))
+        BondParamsRepositoryImpl(bondParamsStorage)
     }
     private val saveBondParamsUseCase by lazy(LazyThreadSafetyMode.NONE) {
         SaveBondParamsUseCase(userRepository)
@@ -26,11 +27,14 @@ class MainViewModelFactory(context: Context) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         val bondInfoService = MoexRepository()
+        val bondInfoRepository = BondInfoRepositoryImpl(bondParamsStorage)
         return MainViewModel(
-            saveBondParamsUseCase,
-            loadBondParamsUseCase,
-            SearchTickersUseCase(bondInfoService),
-            LoadBondInfoUseCase(bondInfoService)
+            saveBondParamsUseCase = saveBondParamsUseCase,
+            loadBondParamsUseCase = loadBondParamsUseCase,
+            saveBondInfoUseCase = SaveBondInfoUseCase(bondInfoRepository),
+            loadBondInfoUseCase = LoadBondInfoUseCase(bondInfoRepository),
+            searchTickersUseCase = SearchTickersUseCase(bondInfoService),
+            loadBondInfoDataUseCase = LoadBondInfoDataUseCase(bondInfoService)
         ) as T
     }
 }

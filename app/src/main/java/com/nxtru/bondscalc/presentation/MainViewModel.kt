@@ -23,8 +23,10 @@ private const val TAG = "MainViewModel"
 class MainViewModel(
     private val saveBondParamsUseCase: SaveBondParamsUseCase,
     private val loadBondParamsUseCase: LoadBondParamsUseCase,
-    private val searchTickersUseCase: SearchTickersUseCase,
+    private val saveBondInfoUseCase: SaveBondInfoUseCase,
     private val loadBondInfoUseCase: LoadBondInfoUseCase,
+    private val searchTickersUseCase: SearchTickersUseCase,
+    private val loadBondInfoDataUseCase: LoadBondInfoDataUseCase,
 ) : ViewModel() {
 
     /*
@@ -41,7 +43,7 @@ class MainViewModel(
 
     init {
         viewModelScope.launch {
-            loadBondParams()
+            loadState()
         }
     }
 
@@ -82,10 +84,10 @@ class MainViewModel(
     }
 
     fun onTickerSelectionDone(secId: String, forceReload: Boolean = false) {
-        if (uiState().calculatorScreenUIState.bondInfo?.secId == secId && !forceReload) return
+        if (secId() == secId && !forceReload) return
         viewModelScope.launch {
             // TODO: show loading indicator
-            val bondInfo = loadBondInfoUseCase(secId)
+            val bondInfo = loadBondInfoDataUseCase(secId)
             if (bondInfo == null) showError(R.string.failed_to_load)
             onUpdateBondInfo(bondInfo)
         }
@@ -109,7 +111,7 @@ class MainViewModel(
         val prevValue = uiState()
         _uiStateFlow.emit(value)
         if (prevValue.calculatorScreenUIState.bondParams != value.calculatorScreenUIState.bondParams) {
-            saveBondParams()
+            saveState()
             calculate()
         }
     }
@@ -165,13 +167,19 @@ class MainViewModel(
         _errorMessageCode.emit(msgId)
     }
 
-    private fun saveBondParams() {
+    private fun saveState() {
         saveBondParamsUseCase.execute(calculatorScreenUIState().bondParams)
+        calculatorScreenUIState().bondInfo?.also {
+            saveBondInfoUseCase(it)
+        }
     }
 
-    private suspend fun loadBondParams() {
+    private suspend fun loadState() {
         updateCalculatorScreenUIState {
-            copy(bondParams = loadBondParamsUseCase.execute())
+            copy(
+                bondParams = loadBondParamsUseCase.execute(),
+                bondInfo = loadBondInfoUseCase()
+            )
         }
     }
 

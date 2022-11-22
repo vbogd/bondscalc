@@ -3,7 +3,7 @@ package com.nxtru.bondscalc.domain.usecase.bondinfo
 import com.nxtru.bondscalc.domain.bondinfo.BondInfoRepository
 import com.nxtru.bondscalc.domain.models.BondInfo
 
-class LoadBondInfoUseCase(
+class LoadBondInfoDataUseCase(
     private val loader: BondInfoRepository
 ) {
     suspend operator fun invoke(secId: String): BondInfo? {

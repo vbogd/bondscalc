@@ -16,7 +16,9 @@ private const val SELL_DATE_KEY = "sellDate"
 private const val TILL_MATURITY_KEY = "tillMaturity"
 
 // https://youtu.be/zt07bObIpSk?list=PLeF3l86ZMVkLQbdRL6Ra4cr_cmPROj94y&t=1527
-class BondParamsRepositoryImpl(private val storage: BondParamsStorage) : BondParamsRepository {
+class BondParamsRepositoryImpl(
+    private val storage: BondParamsStorage
+) : BondParamsRepository {
     override fun saveBondParams(value: BondParams): Boolean {
         saveString(TICKER_KEY, value.ticker)
         saveString(COMMISSION_KEY, value.commission)

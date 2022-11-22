@@ -2,6 +2,7 @@ package com.nxtru.bondscalc.domain.models
 
 /**
  * Input parameters for calculator.
+ * Can be entered manually.
  */
 data class BondParams(
     val ticker: String,

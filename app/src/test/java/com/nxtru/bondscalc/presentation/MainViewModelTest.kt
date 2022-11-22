@@ -3,10 +3,8 @@ package com.nxtru.bondscalc.presentation
 import androidx.arch.core.executor.ArchTaskExecutor
 import androidx.arch.core.executor.TaskExecutor
 import com.nxtru.bondscalc.domain.models.BondParams
-import com.nxtru.bondscalc.domain.usecase.LoadBondParamsUseCase
-import com.nxtru.bondscalc.domain.usecase.SaveBondParamsUseCase
-import com.nxtru.bondscalc.domain.usecase.bondinfo.LoadBondInfoUseCase
-import com.nxtru.bondscalc.domain.usecase.bondinfo.SearchTickersUseCase
+import com.nxtru.bondscalc.domain.usecase.*
+import com.nxtru.bondscalc.domain.usecase.bondinfo.*
 import com.nxtru.bondscalc.presentation.models.MainUIState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,8 +23,10 @@ import org.mockito.kotlin.never
 internal class MainViewModelTest {
     private val saveBondParamsUseCase = mock<SaveBondParamsUseCase>()
     private val loadBondParamsUseCase = mock<LoadBondParamsUseCase>()
-    private val searchTickersUseCase = mock<SearchTickersUseCase>()
+    private val saveBondInfoUseCase = mock<SaveBondInfoUseCase>()
     private val loadBondInfoUseCase = mock<LoadBondInfoUseCase>()
+    private val searchTickersUseCase = mock<SearchTickersUseCase>()
+    private val loadBondInfoDataUseCase = mock<LoadBondInfoDataUseCase>()
 
     private val testDispatcher: TestDispatcher = UnconfinedTestDispatcher()
 
@@ -54,7 +54,7 @@ internal class MainViewModelTest {
             saveBondParamsUseCase,
             loadBondParamsUseCase,
             searchTickersUseCase,
-            loadBondInfoUseCase
+            loadBondInfoDataUseCase
         )
         ArchTaskExecutor.getInstance().setDelegate(null)
         Dispatchers.resetMain()
@@ -96,7 +96,7 @@ internal class MainViewModelTest {
     fun `onCalculatorScreenRefresh with empty secId`() = runTest {
         createViewModel().onCalculatorScreenRefresh()
 
-        Mockito.verify(loadBondInfoUseCase, never()).invoke(any())
+        Mockito.verify(loadBondInfoDataUseCase, never()).invoke(any())
     }
 
     @Test
@@ -108,7 +108,12 @@ internal class MainViewModelTest {
     private fun createViewModel(bondParams: BondParams = BondParams.EMPTY): MainViewModel {
         Mockito.`when`(loadBondParamsUseCase.execute()).thenReturn(bondParams)
         return MainViewModel(
-            saveBondParamsUseCase, loadBondParamsUseCase, searchTickersUseCase, loadBondInfoUseCase
+            saveBondParamsUseCase,
+            loadBondParamsUseCase,
+            saveBondInfoUseCase,
+            loadBondInfoUseCase,
+            searchTickersUseCase,
+            loadBondInfoDataUseCase
         )
     }
 }
