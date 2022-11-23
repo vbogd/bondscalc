@@ -21,9 +21,9 @@
     <string name="calculator_screen">Калькулятор</string>
     <string name="search_screen">Поиск</string>
 <!--    <string name="search_field_label">поиск</string>-->
-    <string name="search_field_placeholder">Поиск по названию или ISIN</string>
+    <string name="search_field_placeholder">Название или ISIN</string>
     <string name="search_field_too_short">Введите минимум 3 символа</string>
-    <string name="empty"></string>
+    <string name="empty" />
     <string name="calculator_screen_title">калькулятор</string>
 
     <!-- Help dialogs -->
