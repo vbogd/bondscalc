@@ -140,11 +140,13 @@ private fun extractSecuritiesSectionInfo(csvLines: List<String>): BondInfo? {
                 ticker = fields[2],
                 isin = fields[29],
                 parValue = fields[10],
-                coupon = fields[36],
-                maturityDate = fields[13],
                 currencyId = fields[26],
-                lastPrice = fields[8],
+                coupon = fields[36],
+                couponPeriod = fields[15],
                 nextCouponDate = fields[6],
+                maturityDate = fields[13],
+                offerDate = fields[37],
+                lastPrice = fields[8],
                 boardId = fields[1],
             )
         }

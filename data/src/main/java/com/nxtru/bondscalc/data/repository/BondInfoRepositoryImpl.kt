@@ -26,11 +26,13 @@ class BondInfoRepositoryImpl(
             ticker = "",
             isin = storage.loadString(ISIN_KEY),
             parValue = "",
-            coupon = "",
-            maturityDate = "",
             currencyId = storage.loadString(CURRENCY_ID_KEY),
-            lastPrice = "",
+            coupon = "",
+            couponPeriod = "",
             nextCouponDate = storage.loadString(NEXT_COUPON_DATE_KEY),
+            maturityDate = "",
+            offerDate = "",
+            lastPrice = "",
             boardId = "",
         )
     }
