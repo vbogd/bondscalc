@@ -13,7 +13,9 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "BondsCalc"
-include ':app'
-include ':data'
-include ':domain'
-include ':moex'
+include(
+    ":app",
+    ":data",
+    ":domain",
+    ":moex",
+)

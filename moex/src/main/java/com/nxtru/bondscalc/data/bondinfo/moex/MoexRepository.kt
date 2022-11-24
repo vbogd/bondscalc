@@ -162,7 +162,7 @@ private fun extractMarketDataSectionInfo(bondInfo: BondInfo, csvLines: List<Stri
     if (parts != null) {
         val lastPrice = parts[11]
         var newBondInfo = bondInfo
-            if (lastPrice.isNotEmpty()) {
+        if (lastPrice.isNotEmpty()) {
             newBondInfo = bondInfo.copy(
                 lastPrice = lastPrice
             )

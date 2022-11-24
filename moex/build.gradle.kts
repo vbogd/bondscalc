@@ -18,5 +18,9 @@ dependencies {
 //    implementation("io.ktor:ktor-client-serialization:$ktorVersion")
 //    implementation("io.ktor:ktor-client-logging:$ktorVersion")
 
-    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }
