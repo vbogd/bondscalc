@@ -11,8 +11,8 @@ android {
         applicationId "com.nxtru.bondscalc"
         minSdk 21
         targetSdk 33
-        versionCode 3
-        versionName "1.2"
+        versionCode 4
+        versionName "1.3"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -83,7 +83,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.8.2'
     testImplementation "org.mockito.kotlin:mockito-kotlin:$mockito_version"
     testImplementation "org.mockito:mockito-inline:$mockito_version"
-    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4"
+    testImplementation libs.kotlinx.coroutines.test
 
     androidTestImplementation 'androidx.test.ext:junit:1.1.4'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'

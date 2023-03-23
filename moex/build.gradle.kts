@@ -19,6 +19,7 @@ dependencies {
 //    implementation("io.ktor:ktor-client-logging:$ktorVersion")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
+    testImplementation(libs.kotlinx.coroutines.test)
 }
 
 tasks.withType<Test> {
