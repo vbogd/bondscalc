@@ -69,7 +69,7 @@ class MoexRepositoryTest {
             extractTickers("JV4L2", lines)
         )
         assertEquals(
-            listOf<String>(),
+            emptyList<BriefBondInfo>(),
             extractTickers("ОФЗ 299", lines)
         )
     }
@@ -143,6 +143,23 @@ class MoexRepositoryTest {
                 boardId = "TQCB",
             ),
             extractBondInfo(readLines("/extractTickets/RU000A101J58.csv"))
+        )
+        assertEquals(
+            BondInfo(
+                secId = "RU000A0ZZY42",
+                ticker = "СолЛизБО03",
+                isin = "RU000A0ZZY42",
+                parValue = "1000",
+                coupon = "12.500",
+                couponPeriod = "91",
+                nextCouponDate = "11.12.2023",
+                maturityDate = "11.12.2023",
+                offerDate = "",
+                currencyId = "SUR",
+                lastPrice = "100",
+                boardId = "TQIR",
+            ),
+            extractBondInfo(readLines("/extractTickets/RU000A0ZZY42.csv"))
         )
         assertEquals(
             null,

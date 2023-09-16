@@ -125,7 +125,7 @@ internal fun extractBondInfo(csvLines: List<String>): BondInfo? {
 }
 
 // valid MOEX bonds boards
-private val validBoards = listOf("TQCB", "TQOB")
+private val validBoards = listOf("TQCB", "TQOB", "TQIR")
 
 // extract info from "securities" section of MOEX response
 private fun extractSecuritiesSectionInfo(csvLines: List<String>): BondInfo? {
