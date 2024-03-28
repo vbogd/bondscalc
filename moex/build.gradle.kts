@@ -1,12 +1,9 @@
 plugins {
     kotlin("jvm")
-//    kotlin("plugin.serialization")
-    `java-library`
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+kotlin {
+    jvmToolchain(11)
 }
 
 val ktorVersion = "2.1.2"

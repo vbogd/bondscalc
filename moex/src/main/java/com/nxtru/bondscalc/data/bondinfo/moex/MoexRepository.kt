@@ -153,6 +153,7 @@ private fun extractSecuritiesSectionInfo(csvLines: List<String>): BondInfo? {
         .firstOrNull { it.boardId in validBoards }
 }
 
+// extract info from "marketdata" section of MOEX response
 private fun extractMarketDataSectionInfo(bondInfo: BondInfo, csvLines: List<String>): BondInfo {
     // actual size of parts in this section is 60
     val limit = 45
