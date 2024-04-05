@@ -24,7 +24,9 @@
     <string name="search_field_placeholder">Название или ISIN</string>
     <string name="search_field_too_short">Введите минимум 3 символа</string>
     <string name="empty" />
-    <string name="calculator_screen_title">калькулятор</string>
+    <string name="calculator_screen_title">BondsCalc</string>
+    <string name="sponsor">надежные-облигации.рф</string>
+    <string name="sponsor_url">https://надежные-облигации.рф/</string>
 
     <!-- Help dialogs -->
     <string name="help_dialog_current_yield_title">Текущая доходность</string>
