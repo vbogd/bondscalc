@@ -9,4 +9,5 @@ data class BondCalcResult(
     // yield to maturity
     val ytm: Double,
     val currentYield: Double,
+    val days: Long,
 )

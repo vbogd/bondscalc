@@ -1,5 +1,6 @@
 package com.nxtru.bondscalc.domain.usecase
 
+import com.nxtru.bondscalc.domain.util.asLocalDate
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -104,7 +105,7 @@ internal class CalcTest {
         )
     }
 
-    private fun date(date: String): Date = SimpleDateFormat("dd.MM.yyyy").parse(date)!!
+    private fun date(date: String) = date.asLocalDate()!!
 }
 
 internal fun assertDoubleEquals(expected: Double, actual: Double, precision: Int = 2) {

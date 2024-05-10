@@ -147,7 +147,7 @@ fun CalculatorScreen(
                         onBondParamsChange(bondParams.copy(sellDate = it))
                     },
                     onToday = {
-                        onBondParamsChange(bondParams.copy(sellDate = getTodayDate()))
+                        onBondParamsChange(bondParams.copy(sellDate = getTomorrowDate()))
                     }
                 )
             }

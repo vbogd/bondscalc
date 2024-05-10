@@ -1,15 +1,7 @@
 package com.nxtru.bondscalc.domain.usecase
 
-import java.util.*
-
-//<string name="commission">комиссия, %</string>
-//<string name="tax">налог, %</string>
-//<string name="coupon">купон, %</string>
-//<string name="par_value">номинал, руб.</string>
-//<string name="buy">покупка</string>
-//<string name="price">цена, %</string>
-//<string name="date">дата</string>
-//<string name="sell">продажа</string>
+import java.time.Duration
+import java.time.LocalDate
 
 // returns income in roubles
 internal fun getIncome(
@@ -18,9 +10,9 @@ internal fun getIncome(
     coupon: Double,     // C7
     parValue: Double,   // C8
     buyPrice: Double,   // C10
-    buyDate: Date,      // C11
+    buyDate: LocalDate, // C11
     sellPrice: Double,  // C13
-    sellDate: Date,     // C14
+    sellDate: LocalDate,// C14
     tillMaturity: Boolean
 ): Double {
     val days = daysBetween(buyDate, sellDate)
@@ -45,9 +37,9 @@ internal fun getProfitability(
     coupon: Double,     // C7
     parValue: Double,   // C8
     buyPrice: Double,   // C10
-    buyDate: Date,      // C11
+    buyDate: LocalDate, // C11
     sellPrice: Double,  // C13
-    sellDate: Date,     // C14
+    sellDate: LocalDate,// C14
     tillMaturity: Boolean
 ): Double {
     val income = getIncome(
@@ -57,8 +49,8 @@ internal fun getProfitability(
 
 //    =((C16/(РАЗНДАТ(C11;C14;"d")))*365)/(C10*C8+((C13*C8)+(C10*C8))*C5)
     return (income * 365 / days) /
-            (buyPrice * parValue + (sellPrice * parValue + buyPrice * parValue) * commission) * 100
+            (buyPrice * parValue + (sellPrice + buyPrice) * parValue * commission) * 100
 }
 
-private fun daysBetween(start: Date, end: Date): Long =
-    ((end.time - start.time) / (1000 * 3600 * 24))
+fun daysBetween(start: LocalDate, end: LocalDate) =
+    Duration.between(start.atStartOfDay(), end.atStartOfDay()).toDays()

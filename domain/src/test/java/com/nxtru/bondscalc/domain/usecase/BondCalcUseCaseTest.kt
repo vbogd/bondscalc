@@ -28,6 +28,7 @@ class BondCalcUseCaseTest {
         assertDoubleEquals(20.56, actual!!.income)
         assertDoubleEquals(18.83, actual.ytm)
         assertDoubleEquals(4.48, actual.currentYield)
+        assertEquals(41, actual.days)
     }
 
     @Test
@@ -49,6 +50,7 @@ class BondCalcUseCaseTest {
         assertDoubleEquals(15.69, actual!!.income)
         assertDoubleEquals(14.37, actual.ytm)
         assertDoubleEquals(0.009, actual.currentYield, 4)
+        assertEquals(41, actual.days)
     }
 
     @Test

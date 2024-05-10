@@ -10,13 +10,13 @@ import com.nxtru.bondscalc.domain.usecase.bondinfo.*
 import kotlinx.coroutines.launch
 import com.nxtru.bondscalc.R
 import com.nxtru.bondscalc.domain.models.BondInfo
+import com.nxtru.bondscalc.domain.util.asString
 import com.nxtru.bondscalc.presentation.models.*
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import java.text.SimpleDateFormat
-import java.util.*
+import java.time.LocalDate
 
 private const val TAG = "MainViewModel"
 
@@ -187,12 +187,8 @@ private fun toUIResults(value: BondCalcResult?): BondCalcUIResult =
         currentYield = String.format("%,.2f", value.currentYield) + " %",
     )
 
-
-private val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.US)
-
-internal fun getTodayDate(): String {
-    return dateFormat.format(Date())
-}
+internal fun getTodayDate() = LocalDate.now().asString()
+internal fun getTomorrowDate() = LocalDate.now().plusDays(1).asString()
 
 data class BondCalcUIResult(
     // income in roubles

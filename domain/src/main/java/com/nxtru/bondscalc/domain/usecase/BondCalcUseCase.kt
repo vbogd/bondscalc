@@ -2,9 +2,8 @@ package com.nxtru.bondscalc.domain.usecase
 
 import com.nxtru.bondscalc.domain.models.BondParams
 import com.nxtru.bondscalc.domain.models.BondCalcResult
+import com.nxtru.bondscalc.domain.util.asLocalDate
 import java.text.ParseException
-import java.text.SimpleDateFormat
-import java.util.*
 
 class BondCalcUseCase {
     fun execute(params: BondParams): BondCalcResult? {
@@ -14,9 +13,9 @@ class BondCalcUseCase {
             val coupon = getPercentValue(params.coupon)
             val parValue = getDoubleValue(params.parValue)
             val buyPrice = getPercentValue(params.buyPrice)
-            val buyDate = getDateValue(params.buyDate)
+            val buyDate = params.buyDate.asLocalDate()
             val sellPrice = getPercentValue(params.sellPrice)
-            val sellDate = getDateValue(params.sellDate)
+            val sellDate = params.sellDate.asLocalDate()
             val tillMaturity = params.tillMaturity
 
             if (commission == null) return null
@@ -31,11 +30,12 @@ class BondCalcUseCase {
             val income = getIncome(
                 commission, tax, coupon, parValue, buyPrice, buyDate, sellPrice, sellDate, tillMaturity
             )
+            val days = daysBetween(buyDate, sellDate)
             val ytm = getProfitability(
                 commission, tax, coupon, parValue, buyPrice, buyDate, sellPrice, sellDate, tillMaturity)
             val currentYield = calculateCurrentYield(tax, coupon, buyPrice)
 
-            return BondCalcResult(income, ytm, currentYield)
+            return BondCalcResult(income, ytm, currentYield, days)
         } catch (e: NumberFormatException) {
             return null
         } catch (e: ParseException) {
@@ -48,19 +48,12 @@ private fun getPercentValue(value: String) = if (value == "") null else toDouble
 
 private fun getDoubleValue(value: String) = if (value == "") null else toDouble(value)
 
-private fun getDateValue(value: String): Date? {
-    if (value.length != 10) return null
-    val format = SimpleDateFormat("dd.MM.yyyy")
-    return format.parse(value)
-}
-
 private fun toDouble(value: String): Double = value.replace(',', '.').toDouble()
 
 private fun calculateCurrentYield(
     tax: Double,
     coupon: Double,
     buyPrice: Double,
-
 ): Double {
     return coupon / buyPrice * 100 * (1 - tax)
 }
