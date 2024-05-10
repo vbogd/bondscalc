@@ -138,27 +138,10 @@ class MainViewModel(
         }
     }
 
-    // TODO: simplify
     private fun onUpdateBondInfo(value: BondInfo?) {
         viewModelScope.launch {
             updateCalculatorScreenUIState {
-                var newBondParams = bondParams.copy(
-                    ticker = value?.ticker ?: "",
-                    coupon = value?.coupon ?: "",
-                    parValue = value?.parValue ?: "",
-                    buyPrice = value?.lastPrice ?: "",
-                    buyDate = getTodayDate(),
-                )
-//        if (bondParams.tillMaturity) {
-                newBondParams = newBondParams.copy(
-                    sellDate = value?.maturityDate ?: "",
-                    sellPrice = "100",
-                )
-//        }
-                copy(
-                    bondInfo = value,
-                    bondParams = newBondParams
-                )
+                update(value)
             }
         }
     }

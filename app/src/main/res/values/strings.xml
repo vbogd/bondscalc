@@ -10,6 +10,8 @@
     <string name="price">цена</string>
     <string name="date">дата</string>
     <string name="sell">продажа</string>
+    <string name="offer">оферта</string>
+    <string name="maturity">погашение</string>
     <string name="result">результаты</string>
     <string name="result_rub">прибыль</string>
     <string name="result_percent">доходность, год.</string>

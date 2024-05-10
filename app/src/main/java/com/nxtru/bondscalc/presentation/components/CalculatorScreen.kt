@@ -16,6 +16,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -25,7 +26,6 @@ import com.nxtru.bondscalc.R
 import com.nxtru.bondscalc.domain.models.BondParams
 import com.nxtru.bondscalc.presentation.*
 import com.nxtru.bondscalc.presentation.models.CalculatorScreenUIState
-import java.util.*
 
 private val padding = 8.dp
 
@@ -118,13 +118,24 @@ fun CalculatorScreen(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                color = MaterialTheme.colorScheme.secondary,
-                text = stringResource(R.string.till_maturity)
-            )
-            Switch(checked = bondParams.tillMaturity, onCheckedChange = {
-                onBondParamsChange(bondParams.copy(tillMaturity = it))
-            })
+            if (uiState.hasOfferDate) {
+                Column(Modifier.weight(1f)) {
+                    LabeledCheckbox(
+                        label = stringResource(R.string.offer),
+                        checked = uiState.tillOffer
+                    ) {
+                        onUIStateChange(uiState.setTillOffer())
+                    }
+                }
+            }
+            Column(Modifier.weight(1f)) {
+                LabeledCheckbox(
+                    label = stringResource(R.string.maturity),
+                    checked = uiState.tillMaturity
+                ) {
+                    onUIStateChange(uiState.setTillMaturity(!uiState.tillMaturity))
+                }
+            }
         }
 
         Row(modifier = rowModifier) {
@@ -305,4 +316,32 @@ fun CalculatorScreenPreview() {
         ),
         onUIStateChange = {}
     )
+}
+
+@Composable
+private fun LabeledCheckbox(
+    label: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                // This is for removing ripple when Row is clicked
+                indication = null,
+                role = Role.Switch,
+                onClick = {
+                    onCheckedChange(!checked)
+                }
+            )
+    ) {
+        Checkbox(checked = checked, onCheckedChange = onCheckedChange)
+        Text(
+            color = MaterialTheme.colorScheme.secondary,
+            text = label
+        )
+    }
 }
