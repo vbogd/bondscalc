@@ -11,7 +11,7 @@ data class CalculatorScreenUIState(
     val bondInfo: BondInfo? = null,
 ) {
 
-    val offerDate = bondInfo?.offerDate ?: ""
+    private val offerDate = bondInfo?.offerDate ?: ""
     val hasOfferDate = bondInfo != null && bondInfo.offerDate != ""
     val tillOffer = bondInfo?.offerDate == bondParams.sellDate
     val tillMaturity = bondParams.tillMaturity

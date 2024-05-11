@@ -171,7 +171,6 @@ fun CalculatorScreen(
                 verticalArrangement = Arrangement.spacedBy(padding),
             ) {
                 Header(stringResource(R.string.result))
-                ResultRow(stringResource(R.string.result_rub), calcResult.income)
                 ResultRow(stringResource(R.string.result_percent), calcResult.ytm)
                 ResultRow(
                     label = stringResource(R.string.result_current_yield),
@@ -179,6 +178,8 @@ fun CalculatorScreen(
                     helpTitle = stringResource(R.string.help_dialog_current_yield_title),
                     helpText = stringArrayResource(R.array.help_dialog_current_yield_body),
                 )
+                ResultRow(stringResource(R.string.result_rub), calcResult.income)
+                ResultRow(stringResource(R.string.time_interval), calcResult.timeInterval)
             }
         }
 //        Text(text = uiState.bondInfo?.toString() ?: "null")
@@ -312,7 +313,7 @@ fun Header(text: String, modifier: Modifier = Modifier) {
 fun CalculatorScreenPreview() {
     CalculatorScreen(
         uiState = CalculatorScreenUIState(
-            calcResult = BondCalcUIResult("14.5 ₽", "9.5 %", "8 %")
+            calcResult = BondCalcUIResult("14.5 ₽", "9.5 %", "8 %", "11")
         ),
         onUIStateChange = {}
     )

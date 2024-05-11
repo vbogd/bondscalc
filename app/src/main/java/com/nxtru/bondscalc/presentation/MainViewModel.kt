@@ -185,6 +185,7 @@ private fun toUIResults(value: BondCalcResult?): BondCalcUIResult =
         income = String.format("%,.2f ₽", value.income),
         ytm = String.format("%,.2f", value.ytm) + " %",
         currentYield = String.format("%,.2f", value.currentYield) + " %",
+        timeInterval = "${value.days}"
     )
 
 internal fun getTodayDate() = LocalDate.now().asString()
@@ -195,8 +196,9 @@ data class BondCalcUIResult(
     val income: String,
     val ytm: String,
     val currentYield: String,
+    val timeInterval: String,
 ) {
     companion object {
-        val UNDEFINED = BondCalcUIResult("", "", "")
+        val UNDEFINED = BondCalcUIResult("", "", "", "")
     }
 }
