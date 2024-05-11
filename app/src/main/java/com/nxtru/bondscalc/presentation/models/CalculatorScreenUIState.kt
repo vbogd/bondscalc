@@ -16,6 +16,13 @@ data class CalculatorScreenUIState(
     val tillOffer = bondInfo?.offerDate == bondParams.sellDate
     val tillMaturity = bondParams.tillMaturity
 
+    fun setSellDate(value: String) = copy(
+        bondParams = bondParams.copy(
+            sellDate = value,
+            tillMaturity = value != "" && value == bondInfo?.maturityDate
+        )
+    )
+
     fun setTillOffer() = copy(
         bondParams = bondParams.copy(
             sellDate = offerDate,

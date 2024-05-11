@@ -144,10 +144,10 @@ fun CalculatorScreen(
                     label = stringResource(R.string.date),
                     value = bondParams.sellDate,
                     onValueChange = {
-                        onBondParamsChange(bondParams.copy(sellDate = it))
+                        onUIStateChange(uiState.setSellDate(it))
                     },
                     onToday = {
-                        onBondParamsChange(bondParams.copy(sellDate = getTomorrowDate()))
+                        onUIStateChange(uiState.setSellDate(getTomorrowDate()))
                     }
                 )
             }
